@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/comp346s17/course-project-course-discourse/issues"
   },
-  "homepage": "https://github.com/comp346s17/course-project-course-discourse#readme"
+  "homepage": "https://github.com/comp346s17/course-project-course-discourse#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
 }
