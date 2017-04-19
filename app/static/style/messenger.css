@@ -1,0 +1,36 @@
+/* Copied from: http://bootsnipp.com/snippets/5lapE */
+.navbar-fixed-left {
+  width: 140px;
+  position: fixed;
+  border-radius: 0;
+  height: 100%;
+}
+
+.navbar-fixed-left .navbar-nav > li {
+  float: none;  /* Cancel default li float: left */
+  width: 150px;
+}
+/* EndCopy */
+
+/* Copied From https://codepen.io/cbracco/pen/zekgx */
+.footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 140px;
+  padding: 1rem;
+  text-align: center;
+}
+/* EndCopy */
+
+.msg {
+     display: inline-block;
+     max-width: calc(70% - 140px);
+     overflow: auto;
+}
+.recieved {
+}
+
+.sent {
+    display: inline-block;
+}
