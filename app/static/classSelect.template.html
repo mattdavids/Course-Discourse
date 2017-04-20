@@ -1,0 +1,99 @@
+<header-top></header-top>
+<div class="container-fluid">
+    <form name="nameMajorForm" ng-submit="submitForm()">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-8">
+                    <span class="h4">Select Semester</span>
+                    <select ng-model="semester.season">
+                        <option value="fall">Fall</option>
+                        <option value="spring">Spring</option>
+                    </select>
+                    <select ng-model="semester.year">
+                        <option ng-repeat="year in years" value="{{year}}">{{year}}</option>
+                    </select>
+                    <hr>
+                    <span class="h4">Classes by department</span>
+                    <select ng-model="current.department" ng-change="departmentUpdate()">
+                        <option ng-repeat="department in departments" value="{{department}}">{{department}}
+                        </option>
+                    </select>
+                <div class="pre-scrollable" style="height: 140px;">
+                    <table class="table">
+                        <tbody>
+                            <tr ng-repeat="row in currentDepartmentClasses">
+                                <td ng-repeat="class in row">
+                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="addClassToSelected(class)" value="Add {{class}}" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <input class="form-control input-sm" type="text" id="classSearch" name="classSearch" placeholder="Search classes" ng-model="current.classSearch" ng-change="updateClassSearch()" autocomplete="off"/>
+                        <br />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="h4">Search Results</span>
+                        <div class="pre-scrollable" style="height: 140px;">
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="row in classResult">
+                                    <td ng-repeat="class in row">
+                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="addClassToSelected(class)" value="Add {{class}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <p class="h4">Classes for {{semester.season}} {{semester.year}}</p>
+                <table class="table">
+                    <tbody>
+                        <tr ng-repeat="class in currentClasses">
+                            <td>
+                                <input type="button" class="btn btn-default btn-sm" id="{{class}}Current" ng-click="removeFromCurrentClasses(class)" value="{{class}}" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table">
+                    <tbody>
+                        <tr ng-repeat="class in selectedClasses">
+                            <td>
+                                <input type="button" class="btn btn-sm" id="{{class}}selected" ng-click="removeClass(class)" value="Remove {{class}}" />
+                            </td>
+                            <td>
+                                <span>Why?</span>
+                                <select ng-model="current[semester.year][semester.season][class].reason">
+                                    <option ng-repeat="reason in reasons" value="{{reason}}">{{reason}}</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="button" class="btn btn-primary btn-sm" id="{{class}}selected" ng-click="addClassFinal(class)" value="Add {{class}}" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <hr>
+                <button class="btn btn-default btn-lg pull-right" type="submit">Next</button>
+            </div>
+        </div>
+        </div>
+    </form>
+</div>

@@ -213,8 +213,110 @@ myApp.component('interestSelect', {
 
 myApp.component('classSelect', {
     templateUrl: 'classSelect.template.html',
-    controller: function($scope, whichPage) {
+    controller: function($scope, $http, $window, whichPage) {
         whichPage.set('Previously taken Courses');
+        
+        $scope.current = {
+            classSearch: '',
+            department: 'CompSci'
+        }
+        
+        $scope.years = [2012, 2013, 2014, 2015, 2016, 2017];
+        $scope.departments = ['CompSci', 'Anthropology', 'Wizarding'];
+        $scope.CompSci = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
+        $scope.Anthropology = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
+        $scope.Wizarding = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
+        
+        $scope.classes = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic', 'economics 401', 'economics 402', 'economics 403', 'economics 404', 'economics 405', 'economics 406', 'economics 407', 'economics 408'];
+        
+        $scope.reasons = ['For major (wanted to)', 'For major (required)', 'For gen ed (wanted to)', 'For gen ed (required)', 'For interest (wanted to)', 'For interest (required)'];
+        
+        $scope.selectedClasses = [];
+        
+        $scope.currentClasses = [];
+        
+        $scope.currentDepartmentClasses = [];
+        
+        $scope.departmentUpdate = function() {
+            $scope.currentDepartmentClasses = makeTableFriendly($scope.getClasses($scope.current.department));
+        }
+        
+        $scope.getClasses = function(department) {
+            return $scope.CompSci;
+        }
+        
+        $scope.addClassToSelected = function(item) {
+            $scope.selectedClasses.push(item);
+            removeFromArray(item, $scope.classes);
+            removeFromArray(item, $scope.CompSci);
+            $scope.updateClassSearch();
+            $scope.departmentUpdate();
+            
+        }
+        
+        function makeTableFriendly(arr) {
+            let newArr = [];
+            if (arr.length % 2 == 0) {
+                for(let i = 0; i < arr.length; i+= 2) {
+                newArr.push([arr[i], arr[i + 1]]);
+                }
+            } else {
+                for(let i = 0; i < arr.length - 1; i+= 2) {
+                    newArr.push([arr[i], arr[i + 1]]);
+                }
+                newArr.push([arr[arr.length - 1]]);
+            }
+
+            return newArr;
+        }
+        
+        function removeFromArray(item, array) {
+            array.splice(array.indexOf(item), 1);
+        }
+        
+        $scope.updateClassSearch = function() {
+            $scope.classResult =
+                makeTableFriendly($scope.classes.filter(function(term) {
+                return term.toLowerCase().includes($scope.current.classSearch.toLowerCase());
+            }).sort(function(a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            })); 
+        }
+        
+        $scope.addClassFinal = function(item) {
+            $scope.currentClasses.push(item);
+            $scope.selectedClasses.splice($scope.selectedClasses.indexOf(item), 1);
+        }
+        
+        $scope.removeClass = function(item) {
+            $scope.selectedClasses.splice($scope.selectedClasses.indexOf(item), 1);
+            $scope.classes.push(item);
+            $scope.CompSci.push(item);
+            $scope.updateClassSearch();
+            $scope.departmentUpdate();
+            
+        }
+        
+        $scope.removeFromCurrentClasses = function(item) {
+            $scope.currentClasses.splice($scope.currentClasses.indexOf(item), 1);
+            $scope.classes.push(item);
+            $scope.CompSci.push(item);
+            $scope.updateClassSearch();
+            $scope.departmentUpdate();
+        }
+        
+        $scope.submitForm = function() {
+            $http({
+                method: 'POST', 
+                url: '/',
+                data: $scope.current,
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            });
+            $window.location.href = '/home';
+        }
+        
+        $scope.departmentUpdate();
+        $scope.updateClassSearch();
     }
 });
 
