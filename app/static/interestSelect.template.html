@@ -1,14 +1,12 @@
 <header-top></header-top>
 <div class="container-fluid">
-    <form name="nameMajorForm" ng-submit="submitForm()">
-    <div class="form-group">
+    <form name="interestForm" ng-submit="submitForm()">
     <div class="row">
-        <div class="col-md-2">
-        </div>
+        <div class="col-md-2"></div>
         <div class="col-md-4">
-            <div class="row">
+                <div class="row">
                     <div class="col-md-12">
-                        <input class="form-control input-sm" type="text" id="majorSearch" name="majorSearch" placeholder="Search majors" ng-model="search.majorVal" ng-change="updateMajorSearch()" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" id="interestSearch" name="interestSearch" placeholder="Search interests" ng-model="search.interestsVal" ng-change="updateInterestSearch()" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="row">
@@ -20,9 +18,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="major in majorsResult">
+                                <tr ng-repeat="interest in interestsResult">
                                     <td>
-                                    <input type="button" class="btn btn-default btn-sm" id="{{major}}" ng-click="addMajor(major)" value="Add {{major}}" />
+                                    <button class="btn btn-default btn-sm" id="{{interest}}" ng-click="addInterest(interest)">Add {{interest}}</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -36,20 +34,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="major in currentMajors">
+                                <tr ng-repeat="interest in currentInterests">
                                     <td>
-                                    <input type="button" class="btn btn-default btn-sm" id="{{major}}" ng-click="deleteMajor(major)" value="Remove {{major}}" />
+                                    <button class="btn btn-default btn-sm" id="{{interest}}" ng-click="deleteInterest(interest)">Remove {{interest}}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-        </div>
-        <div class="col-md-4">
-            <div class="row">
+                </div>
+            <div class="col-md-4">
+                <div class="row">
                     <div class="col-md-12">
-                        <input class="form-control input-sm" type="text" id="minorSearch" name="minorSearch" placeholder="Search minors" ng-model="search.minorVal" ng-change="updateMinorSearch()" autocomplete="off"/>
+                        <input class="form-control input-sm" type="text" id="clubinterestSearch" name="clubSearch" placeholder="Search clubs" ng-model="search.clubVal" ng-change="updateClubSearch()" autocomplete="off"/>
                     </div>
                 </div>
                 <div class="row">
@@ -61,9 +59,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="minor in minorsResult">
+                                <tr ng-repeat="club in clubsResult">
                                     <td>
-                                    <input type="button" class="btn btn-default btn-sm" id="{{minor}}" ng-click="addMinor(minor)" value="Add {{minor}}" />
+                                    <button class="btn btn-default btn-sm" id="{{club}}" ng-click="addClub(club)">Add {{club}}</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -77,23 +75,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="minor in currentMinors">
+                                <tr ng-repeat="club in currentClubs">
                                     <td>
-                                    <input type="button" class="btn btn-default btn-sm" id="{{minor}}" ng-click="deleteMinor(minor)" value="Remove {{minor}}" />
+                                    <button class="btn btn-default btn-sm" id="{{club}}" ng-click="deleteClub(club)">Remove {{club}}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                </div>  
+                </div>
+            </div>
         </div>
-        
-        
-            
-            
+                <button class="btn btn-default btn-lg center-block" type="submit">Next</button>
+            </form>
         </div>
-        </div>
-                    <button class="btn btn-default btn-lg center-block" type="submit">Next</button>
-                    </form>
-
-                </div>      
