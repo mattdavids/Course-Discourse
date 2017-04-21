@@ -1,0 +1,103 @@
+<header-top></header-top>
+<div class="container-fluid">
+    <form name="nameMajorForm" ng-submit="submitForm()">
+    <div class="form-group">
+    <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                    <div class="col-md-12">
+                        <input class="form-control input-sm" type="text" id="majorSearch" name="majorSearch" placeholder="Search majors" ng-model="search.majorVal" ng-change="updateMajorSearch()" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Search Results</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="major in majorsResult">
+                                    <td>
+                                    <input type="button" class="btn btn-default btn-sm" id="{{major}}" ng-click="addMajor(major)" value="Add {{major}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Already Added</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="major in currentMajors">
+                                    <td>
+                                    <input type="button" class="btn btn-default btn-sm" id="{{major}}" ng-click="deleteMajor(major)" value="Remove {{major}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                    <div class="col-md-12">
+                        <input class="form-control input-sm" type="text" id="minorSearch" name="minorSearch" placeholder="Search minors" ng-model="search.minorVal" ng-change="updateMinorSearch()" autocomplete="off"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Search Results</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="minor in minorsResult">
+                                    <td>
+                                    <input type="button" class="btn btn-default btn-sm" id="{{minor}}" ng-click="addMinor(minor)" value="Add {{minor}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Already Added</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="minor in currentMinors">
+                                    <td>
+                                    <input type="button" class="btn btn-default btn-sm" id="{{minor}}" ng-click="deleteMinor(minor)" value="Remove {{minor}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>
+           
+        </div>
+            <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <hr>
+                <button class="btn btn-default btn-lg pull-right" type="submit">Next</button>
+            </div>
+        </div>
+        </div>
+
+                    </form>
+
+                </div>      
