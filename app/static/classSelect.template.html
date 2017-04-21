@@ -4,20 +4,20 @@
     <div class="form-group">
         <div class="row">
             <div class="col-md-8">
-                    <span class="h4">Select Semester</span>
-                    <select ng-model="semester.season">
-                        <option value="fall">Fall</option>
-                        <option value="spring">Spring</option>
-                    </select>
-                    <select ng-model="semester.year">
-                        <option ng-repeat="year in years" value="{{year}}">{{year}}</option>
-                    </select>
-                    <hr>
-                    <span class="h4">Classes by department</span>
-                    <select ng-model="current.department" ng-change="departmentUpdate()">
-                        <option ng-repeat="department in departments" value="{{department}}">{{department}}
-                        </option>
-                    </select>
+                <span class="h4">Select Semester</span>
+                <select ng-model="semester.season">
+                    <option value="fall">Fall</option>
+                    <option value="spring">Spring</option>
+                </select>
+                <select ng-model="semester.year">
+                    <option ng-repeat="year in years" value="{{year}}">{{year}}</option>
+                </select>
+                <hr>
+                <span class="h4">Classes by department</span>
+                <select ng-model="current.department" ng-change="departmentUpdate()">
+                    <option ng-repeat="department in departments" value="{{department}}">{{department}}
+                    </option>
+                </select>
                 <div class="pre-scrollable" style="height: 140px;">
                     <table class="table">
                         <tbody>

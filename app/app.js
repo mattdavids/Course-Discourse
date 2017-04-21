@@ -14,6 +14,11 @@ app.get('/login', function(req, res) {
     res.sendFile(__dirname + '/static/login.html');
 });
 
+app.get('/home', function(req, res) {
+    res.sendFile(__dirname + '/static/findClasses.html');
+});
+
+
 app.use(express.static(__dirname + '/static'));
 
 http.listen(3000, function() {

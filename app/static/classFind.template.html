@@ -1,0 +1,63 @@
+<header-top></header-top>
+<div class="container-fluid">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-8">  
+                <hr>
+                <span class="h4">Recommended</span>
+                <div class="pre-scrollable" style="height: 140px;">
+                    <table ng-if='displayedRecommended.length != 0' class="table">
+                        <tbody>
+                            <tr ng-repeat="row in displayedRecommended">
+                                <td ng-repeat="class in row">
+                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="createConversation(class)" value="Add {{class}}" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div ng-if='displayedRecommended.length == 0'>No more recommended classes...</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <br />
+                        <input class="form-control input-sm" type="text" id="classSearch" name="classSearch" placeholder="Search classes" ng-model="searchTerm" ng-change="updateClassSearch()" autocomplete="off"/>
+                        <br />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <span class="h4">Search Results</span>
+                        <div class="pre-scrollable" style="height: 140px;">
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="row in displayedAll">
+                                    <td ng-repeat="class in row">
+                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="createConversation(class)" value="Add {{class}}" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <p class="h4">Messages</p>
+                <table class="table">
+                    <tbody>
+                        <tr ng-repeat="convo in conversations">
+                            <td>
+                                {{convo}}
+                            </td>
+                            <td>
+                                <input type="button" class="btn btn-default btn-sm" id="{{convo}}Message" ng-click="goToMessages(convo)" value="Finding match..." disabled />
+                                <input type="button" class="btn btn-default btn-sm" id="{{convo}}Remove" ng-click="removeFromSelected(convo)" value="X" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    </form>
+</div>
