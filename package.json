@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/comp346s17/course-project-course-discourse.git"
   },
+  "start": "app/app.js",
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -17,6 +18,7 @@
   },
   "homepage": "https://github.com/comp346s17/course-project-course-discourse#readme",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26"
   }
 }
