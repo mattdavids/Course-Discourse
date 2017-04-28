@@ -1,28 +1,15 @@
+const assert = require('assert');
+
+/* Setup express */ 
 const express = require('express');
 const expressSession = require('express-session')
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const mongo = require('mongodb');
-const assert = require('assert');
-const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
-const MongoClient = mongo.MongoClient;
-
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/course-discourse')
-
-const models = require('./models')
-const User = models.User;
-const Chat = models.Chat;
-const Class = models.Class;
 
 const app = express();
-
 app.use(express.static(__dirname + '/static'));   
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 app.use(expressSession({
     secret: 'mySecretKey',
@@ -30,14 +17,27 @@ app.use(expressSession({
     resave: true 
 }));
 
+/* Setup passport */
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
+
 app.use(passport.initialize());
 app.use(passport.session());
 
+/* Setup Database */
+const models = require('./models')
+const User = models.User;
+const Profile = models.Profile;
+const Chat = models.Chat;
+const Course = models.Course;
+const Data = models.Data;
+
+const url = 'mongodb://localhost:27017/course-discourse';
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/course-discourse')
 
 const http = require('http').Server(app);
 
-// Connection URL
-const url = 'mongodb://localhost:27017/course-discourse';
 
 passport.use('login', new LocalStrategy({
         usernameField: 'email', 
@@ -89,6 +89,46 @@ passport.use('signup', new LocalStrategy({
     }
 ));
 
+app.get('/data/:dataName', function(req, res) {
+    let dataName = req.params['dataName'];
+    Data.findOne({name : dataName}, function(err, data) {
+        if (err) {
+            res.statusCode = 500;
+            return res.end();
+        } 
+
+        if (data === null) {
+            res.statusCode = 404;
+            return res.end(JSON.stringify({}));
+        }
+
+        res.statusCode = 200;
+        res.end(JSON.stringify(data.values));
+    });
+})
+
+app.get('/courses/:year/:season', function(req, res){
+    let courseYear = req.params['year'];
+    let courseSeason = req.params['season'];
+    
+    Course.find({ $and : [{ year : '' + courseYear}, { season : courseSeason}] }, 
+                { _id : false }, 
+                function (err, courses) {
+        if (err) {
+            res.statusCode = 500;
+            return res.end();
+        } 
+
+        if (courses == null) {
+            res.statusCode = 404;
+            return res.end(JSON.stringify({}));
+        }
+
+        res.statusCode = 200;
+        res.end(JSON.stringify(courses));
+    })
+})
+
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/static/index.html');
 });
@@ -103,6 +143,11 @@ app.get('/login', function(req, res) {
 
 app.post('/login', passport.authenticate('login', {
     successRedirect : '/dog',
+    failureRedirect : '/cat',
+}))
+
+app.post('/signup', passport.authenticate('signup', {
+    successRedirect : '/dog', 
     failureRedirect : '/cat',
 }))
 
@@ -121,14 +166,17 @@ app.get('/cat', function(req, res) {
     res.end('dog');
 })
 
-
 app.get('/home', function(req, res) {
     res.sendFile(__dirname + '/static/findClasses.html');
 });
 
-
-
-
 http.listen(3000, function() {
    console.log('listening on *:3000'); 
+});
+
+process.on('SIGINT', function() {
+  mongoose.connection.close(function () {
+    console.log('Mongoose disconnected on app termination');
+    process.exit(0);
+  });
 });
