@@ -1,3 +1,11 @@
+/* 
+ * Reference URLS: 
+ * https://www.npmjs.com/package/connect-mongodb-session ~ Using MongoDBSessions
+ * http://www.scotthasbrouck.com/blog/2016/3/18/passportjs-express-session-with-sockeio ~ Authenticating with socket.io and passport
+ * https://code.tutsplus.com/tutorials/authenticating-nodejs-applications-with-passport--cms-21619 ~ General Authenticating with passport
+ */
+
+const dbURL = 'mongodb://localhost:27017/course-discourse';
 const assert = require('assert');
 
 /* Setup express */ 
@@ -10,11 +18,31 @@ const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
+
+
+/* Setup Sessions + Session Store */
+const MongoDBStore = require('connect-mongodb-session')(expressSession);
+const mongoStore = new MongoDBStore({
+    uri: dbURL,
+    collection: 'sessions'
+});
+
+mongoStore.on('error', function(error) {
+    assert.ifError(error);
+    assert.ok(false);
+});
+
 app.use(expressSession({
     secret: 'mySecretKey',
+    store: mongoStore,
+    cooke: {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
     saveUninitialized: true,
-    resave: true 
+    resave: true,
 }));
+
+
 
 /* Setup passport */
 const passport = require('passport')
@@ -28,6 +56,24 @@ const server = require('http').Server(app);
 
 /* Setup Socket.io */
 const io = require('socket.io')(server);
+const passportSocketIo = require('passport.socketio');
+io.use(passportSocketIo.authorize({
+  key: 'connect.sid',
+  secret: 'mySecretKey',
+  store: mongoStore,
+  passport: passport,
+  cookieParser: cookieParser,
+}));
+
+io.on('connection', (socket) => {
+   console.log('connected user');
+   console.log(socket.request.user);
+   
+   socket.on('dog', (eventData) => {
+       console.log('dog recieved');
+       
+   })
+});
 
 /* Setup Mongoose */
 const models = require('./models')
@@ -37,9 +83,8 @@ const Chat = models.Chat;
 const Course = models.Course;
 const Data = models.Data;
 
-const url = 'mongodb://localhost:27017/course-discourse';
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/course-discourse')
+mongoose.connect(dbURL)
 
 // Home page
 app.get('/', function(req, res) {
