@@ -36,7 +36,6 @@ const chatSchema = new Schema({
         {
             sender: String,
             sentAt: Date,
-            seen: Boolean,
             text: String,  
         }
     ]

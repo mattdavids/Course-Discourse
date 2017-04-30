@@ -65,15 +65,7 @@ io.use(passportSocketIo.authorize({
   cookieParser: cookieParser,
 }));
 
-io.on('connection', (socket) => {
-   console.log('connected user');
-   console.log(socket.request.user);
-   
-   socket.on('dog', (eventData) => {
-       console.log('dog recieved');
-       
-   })
-});
+require('./chat.js')(io);
 
 /* Setup Mongoose */
 const models = require('./models')
