@@ -17,7 +17,8 @@ const profileSchema = new Schema({
     interests: [String],
     clubs: [String],
     majors: [String], 
-    minor: [String],
+    minors: [String],
+    chats: [{type: Schema.Types.ObjectId, ref: 'Chat'}],
 })
 
 const courseSchema = new Schema({

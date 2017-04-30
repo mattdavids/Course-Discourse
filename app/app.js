@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(express.static(__dirname + '/static'));   
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
@@ -19,12 +18,18 @@ app.use(expressSession({
 
 /* Setup passport */
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
-
 app.use(passport.initialize());
 app.use(passport.session());
+require('./passport.js')(passport);
 
-/* Setup Database */
+
+/* Setup Server */
+const server = require('http').Server(app);
+
+/* Setup Socket.io */
+const io = require('socket.io')(server);
+
+/* Setup Mongoose */
 const models = require('./models')
 const User = models.User;
 const Profile = models.Profile;
@@ -36,59 +41,48 @@ const url = 'mongodb://localhost:27017/course-discourse';
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/course-discourse')
 
-const http = require('http').Server(app);
-
-
-passport.use('login', new LocalStrategy({
-        usernameField: 'email', 
-        passwordField: 'password', 
-        passReqToCallback: true,
-    },
-    function(req, email, password, done) {
-        User.findOne({ email : email }, function(err, user) {
-            console.log('err: ' + err);
-
-            if (err) {
-                return done(err);
-            }
-
-            if (!user) {
-                console.log('Unable to login with email: ' + email);
-                console.log('User not found.');
-                return done(null, false, { message: 'incorrect user' });
-            }
-
-            if (user.password !== password) {
-                console.log('Unable to login with email: ' + email);
-                console.log('Incorrect password.');
-                return done(null, false, { message: 'incorrect password' });
-            }
-
-            return done(null, user);
-        });
+// Home page
+app.get('/', function(req, res) {
+    if (req.user) {
+        res.redirect('/home');
+    } else {
+        res.sendFile(__dirname + '/static/index.html');
     }
-));
-
-passport.serializeUser(function(user, done) {
-  done(null, user._id);
-});
- 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
 });
 
-passport.use('signup', new LocalStrategy({
-        usernameField: 'email', 
-        passwordField: 'password', 
-        passReqToCallback: true,
-    },
-    function(req, email, password, done) {
+// Login page
+app.get('/login', function(req, res) {
+    res.sendFile(__dirname + '/static/login.html');
+});
 
+// Signup page
+app.get('/signup', function(req, res) {
+    res.sendFile(__dirname + '/static/signUp.html');
+});
+
+// Main App
+app.get('/home*', (req, res) => {
+    if (req.user) {
+        res.sendFile(__dirname + '/static/findClasses.html');
+    } else {
+        res.redirect('/');
     }
-));
+});
 
+
+// Login/Signup posts
+app.post('/login', passport.authenticate('login', {
+    successRedirect : '/home',
+    failureRedirect : '/login',
+}));
+
+app.post('/signup', passport.authenticate('signup', {
+    successRedirect : '/home', 
+    failureRedirect : '/signup',
+}));
+
+
+// API calls
 app.get('/data/:dataName', function(req, res) {
     let dataName = req.params['dataName'];
     Data.findOne({name : dataName}, function(err, data) {
@@ -126,51 +120,34 @@ app.get('/courses/:year/:season', function(req, res){
 
         res.statusCode = 200;
         res.end(JSON.stringify(courses));
-    })
+    });
 })
 
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/static/index.html');
-});
-
-app.get('/signup', function(req, res) {
-    res.sendFile(__dirname + '/static/signUp.html');
-});
-
-app.get('/login', function(req, res) {
-    res.sendFile(__dirname + '/static/login.html');
-});
-
-app.post('/login', passport.authenticate('login', {
-    successRedirect : '/dog',
-    failureRedirect : '/cat',
-}))
-
-app.post('/signup', passport.authenticate('signup', {
-    successRedirect : '/dog', 
-    failureRedirect : '/cat',
-}))
-
-app.get('/dog', function(req, res) {
-    if (req.user === undefined) {
-        //not logged in
-    } else {
-        //is logged in
+app.get('/profile', function(req, res) {
+    if (!req.user) {
+        res.statusCode = 403;
+        return res.end(JSON.stringify({error : 'You must be logged in'}));
     }
-    res.end('cat ' + req.user);
+
+    Profile.findOne({ _id : req.user.profile }, {_id : false}, function(err, profile) {
+        if (err) {
+            res.statusCode = 500;
+            return res.end();
+        }
+
+        if (profile === null) {
+            res.statusCode = 404;
+            return res.end(JSON.stringify({}));
+        }
+
+        res.statusCode = 200;
+        res.end(JSON.stringify(profile));
+    });
 })
 
-app.get('/cat', function(req, res) {
-    console.log('ffffail');
-    
-    res.end('dog');
-})
+app.use(express.static(__dirname + '/static'));   
 
-app.get('/home', function(req, res) {
-    res.sendFile(__dirname + '/static/findClasses.html');
-});
-
-http.listen(3000, function() {
+server.listen(3000, function() {
    console.log('listening on *:3000'); 
 });
 
