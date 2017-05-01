@@ -1,6 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models').User;
-const Profile = require('./models').Profile;
 
 let loginStrategy = new LocalStrategy({
         usernameField: 'email', 
@@ -36,13 +35,12 @@ let loginStrategy = new LocalStrategy({
 
 const signupStrategy = new LocalStrategy({
         usernameField: 'user', 
-        passwordField: 'profile', 
+        passwordField: 'password', 
         passReqToCallback: true,
     },
-    function(req, userJSON, profileJSON, done) {
+    function(req, userJSON, password, done) {
         let user = JSON.parse(userJSON);
-        let profile = JSON.parse(profileJSON);
-        
+
         process.nextTick(() => {
             User.findOne({ email : user.email }, function(err, otherUser) {
                 if (err) {
@@ -54,18 +52,8 @@ const signupStrategy = new LocalStrategy({
                     return done(null, false);
                 } else {
                     let newUser = new User(user);
-                    // // newUser.email = email;
-                    // newUser.password = password;
-                    // newUser.firstName = req.params['firstName'];
-                    // newUser.lastName = req.params['lastName'];
-                    
-                    let userProfile = new Profile(profile);
-                    newUser.profile = userProfile;
-                    
                     newUser.save().then(
-                        () => userProfile.save().then( 
-                            () => done(null, newUser),
-                            (err) => done(err, false)),
+                        () => done(null, newUser),
                         (err) => done(err, false));
                 }
             });

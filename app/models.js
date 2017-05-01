@@ -6,10 +6,6 @@ const userSchema = new Schema({
     password: String,
     firstName: String, 
     lastName: String,
-    profile: {type: Schema.Types.ObjectId, ref: 'Profile'}
-});
-
-const profileSchema = new Schema({
     coursesTaken: [{
         course: {type: Schema.Types.ObjectId, ref: 'Course'},
         reason: String,
@@ -19,7 +15,7 @@ const profileSchema = new Schema({
     majors: [String], 
     minors: [String],
     chats: [{type: Schema.Types.ObjectId, ref: 'Chat'}],
-})
+});
 
 const courseSchema = new Schema({
     departmentName: String,
@@ -54,14 +50,12 @@ const dataSchema = new Schema({
 })
 
 const User = mongoose.model('User', userSchema);
-const Profile = mongoose.model('Profile', profileSchema);
 const Chat = mongoose.model('Chat', chatSchema);
 const Course = mongoose.model('Course', courseSchema);
 const Data = mongoose.model('Data', dataSchema);
 
 module.exports = {
     User: User,
-    Profile: Profile,
     Chat: Chat,
     Course: Course,
     Data: Data,

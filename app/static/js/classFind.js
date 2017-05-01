@@ -26,6 +26,8 @@ classFindApp.component('classFind', {
             url: '/profile',
         }).then(
             function(response) {
+                console.log('donecat');
+                
                 profile.setProfile(response.data);
                 $scope.user = response.data;
                 $scope.user.chats.forEach(function(chat) {
@@ -156,10 +158,11 @@ classFindApp.component('conversation', {
         $scope.conversation = [];
         
         $scope.user = profile.getProfile();
-        $scope.conversations = $scope.user.chats                    
-        $scope.conversation.forEach(function(chat) {
+        $scope.conversations = $scope.user.chats;                    
+        console.log($scope.conversations);
+        $scope.conversations.forEach(function(chat) {
             if (chat._id == $routeParams.chatId) {
-                $scope.conversation = [];
+                $scope.conversation = chat;
             }
         });
         
@@ -216,11 +219,13 @@ classFindApp.service('conversationsService', function() {
 
 
 classFindApp.service('profile', function() {
-    let profile = {};
+    let user = {};
     
     return {
-        setProfile: function(profile) {profile = profile; },
-        getProfile: function() {return profile; },
+        setProfile: function(profile1) {
+            this.user = profile1; 
+        },
+        getProfile: function() {return this.user; },
     }
 })
     

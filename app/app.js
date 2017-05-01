@@ -71,7 +71,6 @@ chatAPI.init(io);
 /* Setup Mongoose */
 const models = require('./models')
 const User = models.User;
-const Profile = models.Profile;
 const Chat = models.Chat;
 const Course = models.Course;
 const Data = models.Data;
@@ -162,7 +161,23 @@ app.get('/courses', function(req, res) {
 })
 
 app.get('/recommended', function(req, res) {
+    if (!req.user) {
+        res.end('{err : "You must be logged in"}');
+    }
+    
+    let user = req.user;
+    if (user.majors.length === 0) {
+        res.end({});
+        return;
+    }
+    
+    let majorToMatch = ".*" + user.majors[0].replace(' major', '') + ".*";
 
+    Course.find({$and : [{ year: '2017'}, {season: 'fall'}, {departmentName : {$regex : majorToMatch}}]}, function(err, courses) {
+        console.log(majorToMatch);
+        
+        respondWithCourses(res, err, courses);
+    });
 });
 
 function respondWithCourses(res, err, courses) {
@@ -186,20 +201,37 @@ app.get('/profile', function(req, res) {
         return res.end(JSON.stringify({error : 'You must be logged in'}));
     }
 
-    Profile.findOne({ _id : req.user.profile })
-           .populate('chats')
-           .exec(function(err, profile) {        
+    User.findById(req.user._id)
+        .populate('chats')
+        .exec(function(err, user){
         if (err) {
             res.statusCode = 500;
             return res.end();
         }
 
-        if (profile === null) {
+        if (user === null) {
+            res.statusCode = 404;
+            return res.end(JSON.stringify({}));
+        }
+        
+        res.statusCode = 200;
+        res.end(JSON.stringify(user));
+    })
+    return;
+    User.findOne({ _id : req.user._id })
+           .populate('chats')
+           .exec(function(err, user) {        
+        if (err) {
+            res.statusCode = 500;
+            return res.end();
+        }
+
+        if (user === null) {
             res.statusCode = 404;
             return res.end(JSON.stringify({}));
         }
         res.statusCode = 200;
-        res.end(JSON.stringify(profile));
+        res.end(JSON.stringify(user));
     });
 });
 
