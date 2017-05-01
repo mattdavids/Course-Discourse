@@ -151,13 +151,24 @@ classFindApp.component('classFind', {
 
 classFindApp.component('conversation', {
     templateUrl: 'conversation.template.html',
-    controller: function($scope, $http, $routeParams, conversationsService, profile, socket) {
+    controller: function($scope, $http, $routeParams, $location, conversationsService, profile, socket) {
         
         $scope.conversations = [];
         
         $scope.conversation = [];
         
         $scope.user = profile.getProfile();
+        
+        if (!$scope.user) {
+            $http({
+                method: 'GET',
+                url: '/profile',
+            }).then(
+            function(response) {
+                profile.setProfile(response.data);
+                $scope.user = profile.getProfile();
+            });
+        }
 
         $scope.conversations = $scope.user.chats                    
         $scope.conversations.forEach(function(chat) {
@@ -202,7 +213,11 @@ classFindApp.component('conversation', {
                     }
                 }
             });
-        }); 
+        });
+        
+        $scope.back = function() {
+            $location.path('/');
+        }
         
     }
 });

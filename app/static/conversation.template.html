@@ -7,6 +7,7 @@
         <li><a href="#!/3">Brian Rosenberg</a></li>
         <li><a href="#!/4">Marge Wroblewski</a></li>
     </ul>
+    <button class="btn btn-default btn-sm" ng-click="back()" />
 </div>
 <div class="container-fluid footer">
     <div id='message-area' class="container-fluid">
@@ -19,7 +20,6 @@
         <input type="text" ng-model='msgText' class="form-control" placeholder="message">
         <span class="input-group-btn">
             <button class="btn btn-primary"  type="button" ng-click="sendMessage()">Send</button>
-            {{msgText}}
         </span>
     </div>
 </div>
