@@ -342,14 +342,21 @@ myApp.component('classSelect', {
                 }
             }));
             let result = {
-                user: profile.getUser(),
-                profile: profile.getProfile(),
+                user: JSON.stringify(profile.getUser()),
+                profile: JSON.stringify(profile.getProfile()),
                 email: profile.getEmail(),
                 password: profile.getPassword(),
             }
             $http({
                 method: 'POST', 
                 url: '/signUp',
+                transformRequest: function(obj) {
+                    var str = [];
+                    for(var p in obj) {
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                },
                 data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
