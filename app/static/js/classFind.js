@@ -149,7 +149,7 @@ classFindApp.component('classFind', {
 
 classFindApp.component('conversation', {
     templateUrl: 'conversation.template.html',
-    controller: function($scope, $http, $routeParams, conversationsService, profile) {
+    controller: function($scope, $http, $routeParams, conversationsService, profile, socket) {
         
         $scope.conversations = [];
         
@@ -169,6 +169,31 @@ classFindApp.component('conversation', {
                 });
             }
         });
+        
+        $scope.sendMessage = function() {
+            
+            $scope.conversation.push({
+                sender: $scope.user._id,
+                senderName: $scope.user.firstName,
+                sentAt: Date.now(),
+                text: $scope.msgText,  
+            });
+            
+            socket.emit('send', {
+                chatId: $routeParams.chatId,
+                text: $scope.msgText,
+            });
+            
+            $scope.msgText = '';
+        }
+        
+        socket.on('recieveMessage', function(obj) {
+            $scope.conversations.forEach(function(chat) {
+                if (chat._id == obj.chatId) {
+                    chat.messages.push(obj.message);
+                }
+            });
+        }); 
         
     }
 });
@@ -220,7 +245,29 @@ classFindApp.service('conversationsService', function() {
 });
 
 
-
+classFindApp.factory('socket', function($rootScope) {
+    let socket = io.connect();
+    return {
+        on: function (eventName, callback) {
+            socket.on(eventName, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function(eventName, data, callback) {
+            socket.emit(eventName, data, function() {
+                var args = arguments;
+                $rootScope.$apply(function() {
+                    if (callback ) {
+                        callback.apply(socket, args);
+                    }
+                });
+            });
+        }
+    };
+});
 
 classFindApp.service('profile', function() {
     let profile = {};
