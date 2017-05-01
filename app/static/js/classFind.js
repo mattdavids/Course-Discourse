@@ -144,7 +144,7 @@ classFindApp.component('classFind', {
                     url: '/match/' + convo._id,
                 }).then(
                     function(response) {
-                    $location.path('/' + response.data.id);
+                    $location.path('/' + response.data._id);
                 },  function(response) {
                     $location.path('/');
             }); 
@@ -153,7 +153,7 @@ classFindApp.component('classFind', {
         
         $scope.logout = function() {
             $http({
-                method: 'POST',
+                method: 'GET',
                 url: '/logout'
             }).then(function(response) {
                 $window.location.href('/');
