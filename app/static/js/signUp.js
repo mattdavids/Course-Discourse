@@ -48,6 +48,20 @@ myApp.component('nameMajor', {
         $scope.currentMajors = [];
         $scope.currentMinors = [];
         
+        $http({
+            method: 'GET',
+            url: '/getdegrees',
+        }).then(
+            function(response) {
+            $scope.majors = response.majors
+            $scope.minors = response.minors
+            
+            $scope.updateMajorSearch();
+            $scope.updateMinorSearch();
+        },  function(response) {
+            $location.path('/major');
+        });
+        
         $scope.majors = ['Academics', 'Reading', 'Hearthstone', 'Dogs', 'Cats', 'Table Tennis', 'Miniature Sports', 'Model Trains', 'War Gaming', 'Gaming', 'Origami', 'Competative Battleship', 'Jogging', 'Competative Eating', 'Computers', 'Street Fighting', 'Street Fighter', 'Back Alley Brawls'];       
         $scope.minors = ['CompSci', 'Math', 'Data Science'];
         
@@ -76,7 +90,7 @@ myApp.component('nameMajor', {
                 return term.toLowerCase().includes($scope.search.majorVal.toLowerCase());
             }).sort(function(a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
-            }).slice(0, 5);  
+            });  
         }
         
         $scope.addMinor = function(minor) {
@@ -99,7 +113,7 @@ myApp.component('nameMajor', {
                 return term.toLowerCase().includes($scope.search.minorVal.toLowerCase());
             }).sort(function(a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
-            }).slice(0, 5);  
+            });  
         }
         
         $scope.submitForm = function() {
@@ -111,22 +125,9 @@ myApp.component('nameMajor', {
                 data: $scope.user,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
-            $location.path('/clubs');
-        }
-        $scope.updateMajorSearch();
-        $scope.updateMinorSearch();
-        
-        $scope.submitForm = function() {
-            $http({
-                method: 'POST', 
-                url: '/',
-                data: $scope.user,
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            });
             $location.path('/interests');
         }
         
-
     }
 });
 
@@ -136,6 +137,20 @@ myApp.component('interestSelect', {
         whichPage.set('Select Interests and Clubs');
         
         $scope.currentInterests = [];
+        
+        $http({
+            method: 'GET',
+            url: '/getactivities',
+        }).then(
+            function(response) {
+            $scope.interests = response.interests
+            $scope.clubs = response.clubs
+            
+            $scope.updateInterestSearch();
+            $scope.updateClubSearch();
+        },  function(response) {
+            $location.path('/classes');
+        });
         
         $scope.interests = ['Academics', 'Reading', 'Hearthstone', 'Dogs', 'Cats', 'Table Tennis', 'Miniature Sports', 'Model Trains', 'War Gaming', 'Gaming', 'Origami', 'Competative Battleship', 'Jogging', 'Competative Eating', 'Computers', 'Street Fighting', 'Street Fighter', 'Back Alley Brawls'];       
         
@@ -168,7 +183,7 @@ myApp.component('interestSelect', {
                 return term.toLowerCase().includes($scope.search.interestsVal.toLowerCase());
             }).sort(function(a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
-            }).slice(0, 5);  
+            });  
         }
         
         $scope.addClub = function(club) {
@@ -191,7 +206,7 @@ myApp.component('interestSelect', {
                 return term.toLowerCase().includes($scope.search.clubVal);
             }).sort(function(a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
-            }).slice(0, 5);
+            });
         }
         
         $scope.submitForm = function() {
@@ -206,8 +221,6 @@ myApp.component('interestSelect', {
             });
             $location.path('/classes');
         }
-        $scope.updateInterestSearch();
-        $scope.updateClubSearch();
     }
 });
 
@@ -216,10 +229,39 @@ myApp.component('classSelect', {
     controller: function($scope, $http, $window, whichPage) {
         whichPage.set('Previously taken Courses');
         
+        $scope.allCourses = [];
+        
         $scope.current = {
             classSearch: '',
             department: 'CompSci'
         }
+        
+        $scope.semester = {
+            season: '',
+            year: ''
+        }
+        
+        function Course(title, departmentCode, departmentName, courseNumber, season, year) {
+            this.title = title;
+            this.departmentCode = departmentCode;
+            this.departmentName = departmentName;
+            this.courseNumber = courseNumber;
+            this.reason = null;
+            this.season = season;
+            this.year = year;
+        }
+        
+        $http({
+            method: 'GET',
+            url: '/courses',
+        }).then(
+            function(response) {
+            $scope.allCourses = JSON.parse(response);
+            $scope.updateClassSearch();
+        },  function(response) {
+            $location.path('/classes');
+        });
+        
         
         $scope.years = [2012, 2013, 2014, 2015, 2016, 2017];
         $scope.departments = ['CompSci', 'Anthropology', 'Wizarding'];
@@ -254,6 +296,12 @@ myApp.component('classSelect', {
             
         }
         
+        function filterBySeasonYear(season, year) {
+            $scope.currentDepartmentClasses = makeTableFriendly($scope.allCourses.filter(function(course) {
+                return course.season == season && course.year == year;
+            });
+        }
+        
         function makeTableFriendly(arr) {
             let newArr = [];
             if (arr.length % 2 == 0) {
@@ -276,15 +324,22 @@ myApp.component('classSelect', {
         
         $scope.updateClassSearch = function() {
             $scope.classResult =
-                makeTableFriendly($scope.classes.filter(function(term) {
-                return term.toLowerCase().includes($scope.current.classSearch.toLowerCase());
+                makeTableFriendly($scope.allCourses.filter(function(term) {
+                    
+                return  term.title.toLowerCase().includes($scope.current.classSearch.toLowerCase()) || 
+                        term.departmentCode.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
+                        term.departmentName.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
+                        term.courseNumber.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||;
             }).sort(function(a, b) {
-                return a.toLowerCase().localeCompare(b.toLowerCase());
+                return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
             })); 
         }
         
         $scope.addClassFinal = function(item) {
-            $scope.currentClasses.push(item);
+            let course = new Course(item, $scope.semester.season, $scope.semester.year);
+            course.reason = $scope.current[$scope.semester.year][$scope.semester.season][item].reason;          
+            
+            $scope.currentClasses.push(course);
             $scope.selectedClasses.splice($scope.selectedClasses.indexOf(item), 1);
         }
         
@@ -299,7 +354,7 @@ myApp.component('classSelect', {
         
         $scope.removeFromCurrentClasses = function(item) {
             $scope.currentClasses.splice($scope.currentClasses.indexOf(item), 1);
-            $scope.classes.push(item);
+            $scope.classes.push(item.title);
             $scope.CompSci.push(item);
             $scope.updateClassSearch();
             $scope.departmentUpdate();
