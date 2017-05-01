@@ -144,7 +144,7 @@ classFindApp.component('classFind', {
                     url: '/match/' + convo._id,
                 }).then(
                     function(response) {
-                    $location.path('/' + response.data.id);
+                    $location.path('/' + response.data._id);
                 },  function(response) {
                     $location.path('/');
             }); 

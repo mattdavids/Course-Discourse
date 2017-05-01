@@ -119,6 +119,10 @@ app.post('/signup', passport.authenticate('signup', {
     failureRedirect : '/signup',
 }));
 
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
 
 // API calls
 app.get('/data/:dataName', function(req, res) {
@@ -180,7 +184,7 @@ app.get('/recommended', function(req, res) {
     });
 });
 
-app.get('/matches/:courseId', function(req, res) {
+app.get('/match/:courseId', function(req, res) {
     let courseId = req.params['courseId'];
     Course.findById(courseId, function(err, course) {
         if (err) {
