@@ -349,7 +349,6 @@ myApp.component('classSelect', {
                 data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
-            $window.location.href = '/home';
         }
     }
 });
