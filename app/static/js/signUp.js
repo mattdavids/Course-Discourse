@@ -337,7 +337,7 @@ myApp.component('classSelect', {
                 return {
                     id: course._id,
                     reason: course.reason,
-            }));
+            })));
             let result = {
                 user: profile.getUser(),
                 profile: profile.getProfile(),                
