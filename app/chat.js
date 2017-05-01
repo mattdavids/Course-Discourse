@@ -21,7 +21,6 @@ function init(io) {
                 }
 
                 if (!chat.isMember(user._id)) {
-                    console.log(chat.members + ' ' + user._id);
                     socket.emit('err', 'not member of chat');
                     return;
                 }

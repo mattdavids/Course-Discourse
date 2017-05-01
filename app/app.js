@@ -178,8 +178,6 @@ app.get('/recommended', function(req, res) {
     let majorToMatch = ".*" + user.majors[0].replace(' major', '') + ".*";
 
     Course.find({$and : [{ year: '2017'}, {season: 'fall'}, {departmentName : {$regex : majorToMatch}}]}, function(err, courses) {
-        console.log(majorToMatch);
-        
         respondWithCourses(res, err, courses);
     });
 });

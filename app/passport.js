@@ -7,7 +7,6 @@ let loginStrategy = new LocalStrategy({
         passReqToCallback: true,
     }, 
     function(req, email, password, done) {
-        console.log('dfasdf');
         
         User.findOne({ email : email }, function(err, user) {
 
