@@ -229,7 +229,7 @@ myApp.component('interestSelect', {
 
 myApp.component('classSelect', {
     templateUrl: 'classSelect.template.html',
-    controller: function($scope, $http, $window, whichPage, profile) {
+    controller: function($scope, $http, $window, $location, whichPage, profile) {
         whichPage.set('Previously taken Courses');
         
         $scope.allCourses = [];
@@ -334,7 +334,9 @@ myApp.component('classSelect', {
         
         $scope.submitForm = function() {
             profile.setCoursesTaken($scope.chosenCourses.map(function(course) {
-                return course._id;
+                return {
+                    id: course._id,
+                    reason: course.reason,
             }));
             let result = {
                 user: profile.getUser(),
