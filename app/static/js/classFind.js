@@ -12,8 +12,17 @@ classFindApp.config(function($routeProvider) {
 
 classFindApp.component('headerTop', {
     templateUrl: 'headerTop.template.html',
-    controller: function($scope) {
+    controller: function($scope, $http, $location) {
         $scope.logout = true;
+        
+        $scope.logoutFunc = function() {
+            $http({
+                method: 'GET',
+                url: '/logout'
+            }).then(function(response) {
+                $window.location.href('/');
+            });
+        }
     }
 });
 
@@ -149,15 +158,6 @@ classFindApp.component('classFind', {
                     $location.path('/');
             }); 
             }
-        }
-        
-        $scope.logout = function() {
-            $http({
-                method: 'GET',
-                url: '/logout'
-            }).then(function(response) {
-                $window.location.href('/');
-            });
         }
     }
 });
