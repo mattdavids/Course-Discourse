@@ -12,7 +12,7 @@ classFindApp.config(function($routeProvider) {
 
 classFindApp.component('headerTop', {
     templateUrl: 'headerTop.template.html',
-    controller: function($scope, $http, $location) {
+    controller: function($scope, $http, $location, $window) {
         $scope.logout = true;
         
         $scope.logoutFunc = function() {
@@ -20,7 +20,7 @@ classFindApp.component('headerTop', {
                 method: 'GET',
                 url: '/logout'
             }).then(function(response) {
-                $window.location.href('/');
+                $window.location.href = '/';
             });
         }
     }
