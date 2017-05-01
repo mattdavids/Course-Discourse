@@ -334,8 +334,9 @@ myApp.component('classSelect', {
         
         $scope.submitForm = function() {
             profile.setCoursesTaken($scope.chosenCourses.map(function(course) {
+                console.log(course)
                 return {
-                    course: course._id,
+                    course: course.course._id,
                     reason: course.reason,
                 }
             }));
