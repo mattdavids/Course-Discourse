@@ -143,18 +143,26 @@ app.get('/courses/:year/:season', function(req, res){
     let courseYear = req.params['year'];
     let courseSeason = req.params['season'];
     
-    Course.find({ $and : [{ year : '' + courseYear}, { season : courseSeason}] }, 
-                { _id : false }, 
-                function (err, courses) {
+    Course.find({ $and : [{ year : '' + courseYear}, { season : courseSeason}] }, function (err, courses) {
         respondWithCourses(res, err, courses);
     });
 });
 
-app.get('/courses', function(req, res) {
-    Course.find({}, {_id : false}, function(err, courses) {
+app.get('/courses/currentYear', function(req, res) {
+    Course.find({ $and : [{ year : '2017'}, { season : 'fall'}]}, function(err, courses) {
         respondWithCourses(res, err, courses);
     });
 })
+
+app.get('/courses', function(req, res) {
+    Course.find({}, function(err, courses) {
+        respondWithCourses(res, err, courses);
+    });
+})
+
+app.get('/recommended', function(req, res) {
+
+});
 
 function respondWithCourses(res, err, courses) {
     if (err) {
@@ -177,7 +185,9 @@ app.get('/profile', function(req, res) {
         return res.end(JSON.stringify({error : 'You must be logged in'}));
     }
 
-    Profile.findOne({ _id : req.user.profile }, {_id : false}, function(err, profile) {
+    Profile.findOne({ _id : req.user.profile })
+           .populate('chats')
+           .exec(function(err, profile) {        
         if (err) {
             res.statusCode = 500;
             return res.end();
@@ -187,11 +197,10 @@ app.get('/profile', function(req, res) {
             res.statusCode = 404;
             return res.end(JSON.stringify({}));
         }
-
         res.statusCode = 200;
         res.end(JSON.stringify(profile));
     });
-})
+});
 
 app.use(express.static(__dirname + '/static'));   
 

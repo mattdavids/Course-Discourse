@@ -32,9 +32,11 @@ const courseSchema = new Schema({
 
 const chatSchema = new Schema({
     members: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    topic: String,
     messages: [
         {
-            sender: String,
+            sender: {type: Schema.Types.ObjectId, ref: 'User'},
+            senderName: String,
             sentAt: Date,
             text: String,  
         }

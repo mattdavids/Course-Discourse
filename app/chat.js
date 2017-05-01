@@ -13,8 +13,7 @@ function init(io) {
             delete connectedUsers[user._id];
         }); 
 
-        socket.on('message', (messageEventData) => {
-            let messageData = JSON.parse(messageEventData);
+        socket.on('send', (messageData) => {
             Chat.findById(messageData.chatId, function(err, chat) {
                 if (!chat) {
                     socket.emit('err', { message: 'chat not found' });
@@ -28,19 +27,18 @@ function init(io) {
                 }
 
                 let message = {
-                    sender: user.email,
+                    sender: user._id,
+                    senderName: user.firstName,
                     sentAt: Date.now(),
-                    text: messageData.text
+                    text: messageData.text,
                 } 
                 
                 chat.messages.push(message);
                 chat.save();
 
                 for (let memberId of chat.members) {
-                    if (!memberId.equals(user._id)) {
-                        console.log(memberId);
-                        if (connectedUsers[memberId])
-                            connectedUsers[memberId].emit('receivedMessage', {chatId: chat._id, message: message});
+                    if (!memberId.equals(user._id) && connectedUsers[memberId]) {
+                        connectedUsers[memberId].emit('receiveMessage', {chatId: chat._id, message: message});
                     }
                 }
             });
@@ -49,7 +47,7 @@ function init(io) {
         socket.on('fetch-latest', (req) => {
             let chatId = req.chatId;
             let amount = req.amount;
-
+            
             Chat.findById(req.chatId, (err, chat) => {
                 if (!chat) {
                     socket.emit('err', 'chat not found');
@@ -61,22 +59,18 @@ function init(io) {
                     return;
                 }
 
+                let toSend = [];
+                let numMessages = chat.messages.length;
+                if (!req.amount || chat.messages.length <= req.amount) {
+                    toSend = chat.messages;
+                } else {
+                    toSend = chat.messages.slice(numMessages - req.amount, numMessages);
+                }
 
-            })    
+                socket.emit('messages', toSend);
+            });
         });
     });
 }
 
 module.exports = init;
-
-
-
-// io.on('connection', (socket) => {
-//    console.log('connected user');
-//    console.log(socket.request.user);
-   
-//    socket.on('dog', (eventData) => {
-//        console.log('dog recieved');
-       
-//    })
-// });
