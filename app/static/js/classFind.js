@@ -14,7 +14,7 @@ classFindApp.component('headerTop', {
 
 classFindApp.component('classFind', {
     templateUrl: 'classFind.template.html',
-    controller: function($scope, $http, $window, $location, selectedChat) {
+    controller: function($scope, $http, $window, $location, profile) {
         
         $scope.user = {};
         $scope.displayedRecommended = [];
@@ -26,6 +26,7 @@ classFindApp.component('classFind', {
             url: '/profile',
         }).then(
             function(response) {
+                profile.setProfile(response.data);
                 $scope.user = response.data;
                 $scope.user.chats.forEach(function(chat) {
                     $scope.conversations.push({
@@ -148,26 +149,18 @@ classFindApp.component('classFind', {
 
 classFindApp.component('conversation', {
     templateUrl: 'conversation.template.html',
-    controller: function($scope, $routeParams, conversationsService) {
+    controller: function($scope, $http, $routeParams, conversationsService, profile) {
         
         $scope.conversations = [];
         
         $scope.conversation = [];
         
-        $http({
-            method: 'GET',
-            url: '/profile',
-        }).then(
-            function(response) {
-                $scope.user = response.data;
-                $scope.conversations = $scope.user.chats                    
-                $scope.conversation.forEach(function(chat) {
-                    if (chat._id == $routeParams.chatId) {
-                        $scope.conversation = [];
-                    }
-                });
-        },  function(response) {
-            $location.path('/');
+        $scope.user = profile.getProfile();
+        $scope.conversations = $scope.user.chats                    
+        $scope.conversation.forEach(function(chat) {
+            if (chat._id == $routeParams.chatId) {
+                $scope.conversation = [];
+            }
         });
         
     }
@@ -222,12 +215,12 @@ classFindApp.service('conversationsService', function() {
 
 
 
-classFindApp.service('selectedChat', function() {
-    let selected = '';
+classFindApp.service('profile', function() {
+    let profile = {};
     
     return {
-        get: function() {return selected; },
-        set: function(id) {selected = id;}
+        setProfile: function(profile) {profile = profile; },
+        getProfile: function() {return profile; },
     }
 })
     
