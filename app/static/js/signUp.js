@@ -27,8 +27,6 @@ myApp.component('emailPassword', {
         
         $scope.submitForm = function() {
             profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
-            profile.setEmail($scope.user.email);
-            profile.setPassword($scope.user.password);
             $location.path('/major');
         }
     }
@@ -125,8 +123,8 @@ myApp.component('nameMajor', {
         }
         
         $scope.submitForm = function() {
-            profile.setMajors = $scope.currentMajors;
-            profile.setMinors = $scope.currentMinors;
+            profile.setMajors($scope.currentMajors);
+            profile.setMinors($scope.currentMinors);
             
             $location.path('/interests');
         }
@@ -221,8 +219,8 @@ myApp.component('interestSelect', {
         }
         
         $scope.submitForm = function() {
-            profile.setInterests = $scope.currentInterests;
-            profile.setClubs = $scope.currentClubs;
+            profile.setInterests($scope.currentInterests);
+            profile.setClubs($scope.currentClubs);
             
             $location.path('/classes');
         }
@@ -359,6 +357,10 @@ myApp.component('classSelect', {
                 },
                 data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            }).then(function(response) {
+                $window.location.href = '/home'
+            }, function(response) {
+                $window.location.href = '/home'
             });
         }
     }
@@ -389,14 +391,10 @@ myApp.service('profile', function() {
         password: '',
         firstName: '',
         lastName: '',
-    }
-    
-    let email = '';
-    let password = '';
-    
+    }    
     
     return {
-        setInterests: function(interests) {profile.interests = interests;},
+        setInterests: function(interests) {profile.interests = interests; },
         setClubs: function(clubs) {profile.clubs = clubs;},
         setMajors: function(majors) {profile.majors = majors;},
         setMinors: function(minors) {profile.minors = minors;},
@@ -408,10 +406,8 @@ myApp.service('profile', function() {
             user.firstName = firstName;
             user.lastName = lastName;
         },
-        setEmail: function(email) {email = email; },
-        setPassword: function(password) {password = password; },
-        getEmail: function() {return email; },
-        getPassword: function() {return password; },
+        getEmail: function() {return user.email; },
+        getPassword: function() {return user.password; },
         getUser: function() {return user;}
         
     }
