@@ -6,15 +6,60 @@ classFindApp.component('headerTop', {
 
 classFindApp.component('classFind', {
     templateUrl: 'classFind.template.html',
-    controller: function($scope) {
-        $scope.recommendedClasses = ['Object-Oriented Programming', 'Internet Computing', 'Software Development'];
-        $scope.allClasses = ['Intro to CS', 'Intro to Anthro', 'Object-Oriented Programming', 'Internet Computing', 'Software Development', 'English 101', 'Calc 1', 'Calc 2', 'Calc 3', 'Linear Algebra'];
+    controller: function($scope, $http, $window, $location, selectedChat) {
+        
+        $scope.profile = {};
+        $scope.displayedRecommended = [];
+        $scope.allClasses = [];
+        $scope.conversations = [];
+        
+        $http({
+            method: 'GET',
+            url: '/profile',
+        }).then(
+            function(response) {
+                $scope.profile = response.data;
+                $scope.profile.chats.forEach(function(chat) {
+                    $scope.conversations.push(chat);
+                });
+        },  function(response) {
+            $location.path('/home');
+        });
+        
+        $http({
+            method: 'GET',
+            url: '/recommended',
+        }).then(
+            function(response) {
+                $scope.displayedRecommended = response.data;
+        },  function(response) {
+            $location.path('/home');
+        });
+    
+        $http({
+            method: 'GET',
+            url: '/courses/currentYear',
+        }).then(
+            function(response) {
+                $scope.allClasses = response.data;
+                $scope.allClasses.sort(function(a, b) {
+                    return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                });
+                let result = [];
+                for (let i = 0; i < $scope.allClasses.length - 1; i ++) {
+                    if ($scope.allClasses[i + 1].courseName != $scope.allClasses[i].courseName) {
+                        result.push($scope.allClasses[i]);
+                    }
+                }  
+                $scope.allClasses = result;
+                
+                $scope.updateClassSearch();
+        },  function(response) {
+            $location.path('/home');
+        });
+        
         $scope.selectedClasses = [];
         $scope.searchTerm = '';
-
-        $scope.displayedAll = makeTableFriendly($scope.allClasses);
-        $scope.displayedRecommended = makeTableFriendly($scope.recommendedClasses);
-        $scope.conversations = [];
 
         function makeTableFriendly(arr) {
             let newArr = [];
@@ -34,26 +79,30 @@ classFindApp.component('classFind', {
 
         $scope.updateClassSearch = function() {
             $scope.displayedAll =
-                makeTableFriendly($scope.allClasses.filter(function(term) {
-                return term.toLowerCase().includes($scope.searchTerm.toLowerCase());
+                makeTableFriendly($scope.allClasses.filter(function(course) {
+                    
+                return  course.courseName.toLowerCase().includes($scope.searchTerm.toLowerCase()) || 
+                        course.departmentCode.toLowerCase().includes($scope.searchTerm.toLowerCase()) ||
+                        course.departmentName.toLowerCase().includes($scope.searchTerm.toLowerCase()) ||
+                        course.courseNumber.toLowerCase().includes($scope.searchTerm.toLowerCase());
             }).sort(function(a, b) {
-                return a.toLowerCase().localeCompare(b.toLowerCase());
+                return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
             })); 
-        } 
+        }
 
         $scope.createConversation = function(classDiscussing) {
             removeFromArray($scope.allClasses, classDiscussing);
-            removeFromArray($scope.recommendedClasses, classDiscussing);
+            removeFromArray($scope.displayedRecommended, classDiscussing);
             $scope.conversations.push(classDiscussing);
 
-            $scope.displayedAll = makeTableFriendly($scope.allClasses);
-            $scope.displayedRecommended = makeTableFriendly($scope.recommendedClasses);
+            $scope.updateClassSearch();
+            $scope.displayedRecommended = $scope.displayedRecommended;
         }
 
         $scope.removeFromSelected = function(classToRemove){
             removeFromArray($scope.conversations, classToRemove);
             $scope.allClasses.push(classToRemove);
-            $scope.displayedAll = makeTableFriendly($scope.allClasses);
+            $scope.updateClassSearch();
 
         }
 
@@ -65,3 +114,14 @@ classFindApp.component('classFind', {
         }
     }
 });
+
+classFindApp.service('selectedChat', function() {
+    let selected = '';
+    
+    return {
+        get: function() {return selected; },
+        set: function(id) {selected = id;}
+    }
+})
+    
+        
