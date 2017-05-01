@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="login">
+<html>
   <head>
     <title>App</title>
     
@@ -8,7 +8,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-route.js" type="text/javascript"></script>
-    <script src="js/login.js" type="text/javascript"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -28,7 +27,7 @@
                 <form method="post">
                     <input class="form-control input-sm center-block" type="text" id="username" name="username" placeholder="Username"/>
                     <br/>
-                    <input class="form-control input-sm center-block" type="text" id="password" name="password" placeholder="Password"/>
+                    <input class="form-control input-sm center-block" type="password" id="password" name="password" placeholder="Password"/>
                     <br/>
                     <a href="/signup" class="btn btn-lg btn-default pull-left">Sign Up</a>
                     <button class="btn btn-default btn-lg pull-right" type="submit">Login</button>
