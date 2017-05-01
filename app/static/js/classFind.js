@@ -158,11 +158,18 @@ classFindApp.component('conversation', {
         $scope.conversation = [];
         
         $scope.user = profile.getProfile();
-        $scope.conversations = $scope.user.chats;                    
-        console.log($scope.conversations);
+
+        $scope.conversations = $scope.user.chats                    
         $scope.conversations.forEach(function(chat) {
             if (chat._id == $routeParams.chatId) {
                 $scope.conversation = chat;
+                $scope.conversation.messages.forEach(function(msg) {
+                    if (msg.sender != $scope.user._id) {
+                        msg.sent = false;
+                    } else {
+                        msg.sent = true;
+                    }
+                });
             }
         });
         
