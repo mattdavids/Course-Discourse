@@ -13,7 +13,6 @@
                     <option ng-repeat="year in years" value="{{year}}">{{year}}</option>
                 </select>
                 <input type="button" class="btn btn-default btn-sm" id="submitTime" ng-click="updateSemesterCourses(semester.season,semester.year)" value="Update" />
-                <hr>
                 <div class="row">
                     <div class="col-md-12">
                         <br />
@@ -44,7 +43,7 @@
                     <tbody>
                         <tr ng-repeat="class in chosenCourses">
                             <td ng-if="class.course.season == semester.season && class.course.year == semester.year">
-                                {{class.course.courseName}}  <input type="button" class="btn btn-default btn-sm" id="{{class}}Current" ng-click="removeFromCurrentClasses(class.course)" value="Remove" />
+                                {{class.course.courseName}}  <input type="button" class="btn btn-sm btn-danger" id="{{class}}Current" ng-click="removeFromCurrentClasses(class.course)" value="Remove" />
                             </td>
                         </tr>
                     </tbody>
@@ -57,7 +56,7 @@
                     <tbody>
                         <tr ng-repeat="course in selectedClasses">
                             <td>
-                                <input type="button" class="btn btn-sm" id="{{course}}selected" ng-click="removeClass(course)" value="Remove {{course.courseName}}" />
+                                <input type="button" class="btn btn-sm btn-danger" id="{{course}}selected" ng-click="removeClass(course) " value="Remove {{course.courseName}}" />
                             </td>
                             <td>
                                 <span>Why?</span>
