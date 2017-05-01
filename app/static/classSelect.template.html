@@ -23,7 +23,7 @@
                         <tbody>
                             <tr ng-repeat="row in currentDepartmentClasses">
                                 <td ng-repeat="class in row">
-                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="addClassToSelected(class)" value="Add {{class}}" />
+                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="addClassToSelected(class)" value="Add {{class.title}}" />
                                 </td>
                             </tr>
                         </tbody>
@@ -59,7 +59,7 @@
                     <tbody>
                         <tr ng-repeat="class in currentClasses">
                             <td>
-                                <input type="button" class="btn btn-default btn-sm" id="{{class}}Current" ng-click="removeFromCurrentClasses(class)" value="{{class}}" />
+                                <input type="button" class="btn btn-default btn-sm" id="{{class}}Current" ng-click="removeFromCurrentClasses(class)" value="{{class.title}}" />
                             </td>
                         </tr>
                     </tbody>
@@ -70,18 +70,18 @@
             <div class="col-md-8">
                 <table class="table">
                     <tbody>
-                        <tr ng-repeat="class in selectedClasses">
+                        <tr ng-repeat="course in selectedClasses">
                             <td>
-                                <input type="button" class="btn btn-sm" id="{{class}}selected" ng-click="removeClass(class)" value="Remove {{class}}" />
+                                <input type="button" class="btn btn-sm" id="{{course}}selected" ng-click="removeClass(course)" value="Remove {{course}}" />
                             </td>
                             <td>
                                 <span>Why?</span>
-                                <select ng-model="current[semester.year][semester.season][class].reason">
+                                <select ng-model="current[semester.year][semester.season][course].reason">
                                     <option ng-repeat="reason in reasons" value="{{reason}}">{{reason}}</option>
                                 </select>
                             </td>
                             <td>
-                                <input type="button" class="btn btn-primary btn-sm" id="{{class}}selected" ng-click="addClassFinal(class)" value="Add {{class}}" />
+                                <input type="button" class="btn btn-primary btn-sm" id="{{course}}selected" ng-click="addClassFinal(course)" value="Add {{course}}" />
                             </td>
                         </tr>
                     </tbody>
@@ -96,4 +96,5 @@
         </div>
         </div>
     </form>
+    {{current}}
 </div>
