@@ -269,22 +269,6 @@ app.get('/profile', function(req, res) {
         
         res.statusCode = 200;
         res.end(JSON.stringify(user));
-    })
-    return;
-    User.findOne({ _id : req.user._id })
-           .populate('chats')
-           .exec(function(err, user) {        
-        if (err) {
-            res.statusCode = 500;
-            return res.end();
-        }
-
-        if (user === null) {
-            res.statusCode = 404;
-            return res.end(JSON.stringify({}));
-        }
-        res.statusCode = 200;
-        res.end(JSON.stringify(user));
     });
 });
 
