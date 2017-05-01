@@ -10,7 +10,7 @@
                         <tbody>
                             <tr ng-repeat="row in displayedRecommended">
                                 <td ng-repeat="class in row">
-                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="createConversation(class)" value="Add {{class}}" />
+                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="createConversation(class)" value="Add {{class.courseName}}" />
                                 </td>
                             </tr>
                         </tbody>

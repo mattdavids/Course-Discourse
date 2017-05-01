@@ -46,7 +46,7 @@ classFindApp.component('classFind', {
             url: '/recommended',
         }).then(
             function(response) {
-                $scope.displayedRecommended = response.data;
+                $scope.displayedRecommended = makeTableFriendly(response.data);
         },  function(response) {
             $location.path('/');
         });
@@ -180,6 +180,7 @@ classFindApp.component('conversation', {
                 senderName: $scope.user.firstName,
                 sentAt: Date.now(),
                 text: $scope.msgText,  
+                sent: true,
             });
             
             socket.emit('send', {
@@ -190,10 +191,15 @@ classFindApp.component('conversation', {
             $scope.msgText = '';
         }
         
-        socket.on('recieveMessage', function(obj) {
+        socket.on('receiveMessage', function(obj) {
             $scope.conversations.forEach(function(chat) {
                 if (chat._id == obj.chatId) {
+                    obj.message.sent = false;
                     chat.messages.push(obj.message);
+
+                    if (obj.chatId == $routeParams.chatId) {
+                        $scope.conversation.push(obj.message);
+                    }
                 }
             });
         }); 
