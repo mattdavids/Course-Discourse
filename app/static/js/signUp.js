@@ -21,17 +21,12 @@ myApp.component('headerTop', {
 
 myApp.component('emailPassword', {
     templateUrl: 'emailPassword.template.html',
-    controller: function($scope, $http, $location, whichPage) {
+    controller: function($scope, $http, $location, whichPage, profile) {
         whichPage.set('Name, Email, and Password');
         $scope.user = {};
         
         $scope.submitForm = function() {
-            $http({
-                method: 'POST', 
-                url: '/',
-                data: $scope.user,
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            });
+            profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
             $location.path('/major');
         }
     }
@@ -39,7 +34,7 @@ myApp.component('emailPassword', {
 
 myApp.component('nameMajor', {
     templateUrl: 'nameMajor.template.html',
-    controller: function($scope, $http, $location, whichPage) {
+    controller: function($scope, $http, $location, whichPage, profile) {
         
         whichPage.set('Majors and Minors');
         
@@ -48,22 +43,33 @@ myApp.component('nameMajor', {
         $scope.currentMajors = [];
         $scope.currentMinors = [];
         
+        $scope.majors = [];
+        $scope.minors = [];
+        
         $http({
             method: 'GET',
-            url: '/getdegrees',
+            url: '/data/majors',
         }).then(
             function(response) {
-            $scope.majors = response.majors
-            $scope.minors = response.minors
+            $scope.majors = response.data;
             
             $scope.updateMajorSearch();
+        },  function(response) {
+            $location.path('/major');
+        });
+        
+        $http({
+            method: 'GET',
+            url: '/data/minors',
+        }).then(
+            function(response) {
+            $scope.minors = response.data;
+            
             $scope.updateMinorSearch();
         },  function(response) {
             $location.path('/major');
         });
         
-        $scope.majors = ['Academics', 'Reading', 'Hearthstone', 'Dogs', 'Cats', 'Table Tennis', 'Miniature Sports', 'Model Trains', 'War Gaming', 'Gaming', 'Origami', 'Competative Battleship', 'Jogging', 'Competative Eating', 'Computers', 'Street Fighting', 'Street Fighter', 'Back Alley Brawls'];       
-        $scope.minors = ['CompSci', 'Math', 'Data Science'];
         
         $scope.search = {
             minorVal: '',
@@ -117,14 +123,9 @@ myApp.component('nameMajor', {
         }
         
         $scope.submitForm = function() {
-            $scope.user.currentMajors = $scope.currentMajors;
-            $scope.user.currenMinors = $scope.currentMinors;
-            $http({
-                method: 'POST', 
-                url: '/',
-                data: $scope.user,
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            });
+            profile.setMajors = $scope.currentMajors;
+            profile.setMinors = $scope.currentMinors;
+            
             $location.path('/interests');
         }
         
@@ -133,30 +134,38 @@ myApp.component('nameMajor', {
 
 myApp.component('interestSelect', {
     templateUrl: 'interestSelect.template.html',
-    controller: function($scope, $http, $location, whichPage) {
+    controller: function($scope, $http, $location, whichPage, profile) {
         whichPage.set('Select Interests and Clubs');
         
         $scope.currentInterests = [];
+        $scope.currentClubs = [];
+        
+        $scope.interests = [];
+        $scope.clubs = [];
         
         $http({
             method: 'GET',
-            url: '/getactivities',
+            url: '/data/interests',
         }).then(
             function(response) {
-            $scope.interests = response.interests
-            $scope.clubs = response.clubs
+            $scope.interests = response.data;
             
             $scope.updateInterestSearch();
-            $scope.updateClubSearch();
         },  function(response) {
-            $location.path('/classes');
+            $location.path('/interests');
         });
         
-        $scope.interests = ['Academics', 'Reading', 'Hearthstone', 'Dogs', 'Cats', 'Table Tennis', 'Miniature Sports', 'Model Trains', 'War Gaming', 'Gaming', 'Origami', 'Competative Battleship', 'Jogging', 'Competative Eating', 'Computers', 'Street Fighting', 'Street Fighter', 'Back Alley Brawls'];       
-        
-        $scope.currentClubs = [];
-        
-        $scope.clubs = ['Bridge', 'Mac Weekly', 'Anime', 'Yarn', 'Fossil Free', 'Minnesota Public Interest Group']; 
+        $http({
+            method: 'GET',
+            url: '/data/clubs',
+        }).then(
+            function(response) {
+            $scope.clubs = response.data;
+            
+            $scope.updateClubSearch();
+        },  function(response) {
+            $location.path('/interests');
+        });     
         
         $scope.search = {
             interestsVal: '',
@@ -210,15 +219,9 @@ myApp.component('interestSelect', {
         }
         
         $scope.submitForm = function() {
-            $http({
-                method: 'POST', 
-                url: '/',
-                data: {
-                    Interests: $scope.currentInterests,
-                    Clubs: $scope.currentClubs
-                },
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-            });
+            profile.setInterests = $scope.currentInterests;
+            profile.setClubs = $scope.currentClubs;
+            
             $location.path('/classes');
         }
     }
@@ -226,14 +229,14 @@ myApp.component('interestSelect', {
 
 myApp.component('classSelect', {
     templateUrl: 'classSelect.template.html',
-    controller: function($scope, $http, $window, whichPage) {
+    controller: function($scope, $http, $window, whichPage, profile) {
         whichPage.set('Previously taken Courses');
         
         $scope.allCourses = [];
         
         $scope.current = {
             classSearch: '',
-            department: 'CompSci'
+            department: ''
         }
         
         $scope.semester = {
@@ -241,35 +244,20 @@ myApp.component('classSelect', {
             year: ''
         }
         
-        function Course(title, departmentCode, departmentName, courseNumber, season, year) {
-            this.title = title;
-            this.departmentCode = departmentCode;
-            this.departmentName = departmentName;
-            this.courseNumber = courseNumber;
-            this.reason = null;
-            this.season = season;
-            this.year = year;
-        }
-        
         $http({
             method: 'GET',
             url: '/courses',
         }).then(
             function(response) {
-            $scope.allCourses = JSON.parse(response);
-            $scope.updateClassSearch();
+            $scope.allCourses = response.data;
         },  function(response) {
             $location.path('/classes');
         });
         
+        $scope.semesterCourses = [];
+        $scope.chosenCourses = [];        
         
-        $scope.years = [2012, 2013, 2014, 2015, 2016, 2017];
-        $scope.departments = ['CompSci', 'Anthropology', 'Wizarding'];
-        $scope.CompSci = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic','intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
-        $scope.Anthropology = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
-        $scope.Wizarding = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic'];
-        
-        $scope.classes = ['intro to CS', 'intro to other', 'intro to programming', 'intro to computing', 'intro to math', 'intro to logic', 'economics 401', 'economics 402', 'economics 403', 'economics 404', 'economics 405', 'economics 406', 'economics 407', 'economics 408'];
+        $scope.years = [2013, 2014, 2015, 2016, 2017];
         
         $scope.reasons = ['For major (wanted to)', 'For major (required)', 'For gen ed (wanted to)', 'For gen ed (required)', 'For interest (wanted to)', 'For interest (required)'];
         
@@ -277,29 +265,17 @@ myApp.component('classSelect', {
         
         $scope.currentClasses = [];
         
-        $scope.currentDepartmentClasses = [];
-        
-        $scope.departmentUpdate = function() {
-            $scope.currentDepartmentClasses = makeTableFriendly($scope.getClasses($scope.current.department));
-        }
-        
-        $scope.getClasses = function(department) {
-            return $scope.CompSci;
+        $scope.updateSemesterCourses = function(season, year) {
+            $scope.semesterCourses = $scope.allCourses.filter(function(course) {
+                return course.season == season && course.year == year;
+            });
+            $scope.updateClassSearch();
         }
         
         $scope.addClassToSelected = function(item) {
             $scope.selectedClasses.push(item);
-            removeFromArray(item, $scope.classes);
-            removeFromArray(item, $scope.CompSci);
+            removeFromArray(item, $scope.semesterCourses);
             $scope.updateClassSearch();
-            $scope.departmentUpdate();
-            
-        }
-        
-        function filterBySeasonYear(season, year) {
-            $scope.currentDepartmentClasses = makeTableFriendly($scope.allCourses.filter(function(course) {
-                return course.season == season && course.year == year;
-            });
         }
         
         function makeTableFriendly(arr) {
@@ -324,54 +300,54 @@ myApp.component('classSelect', {
         
         $scope.updateClassSearch = function() {
             $scope.classResult =
-                makeTableFriendly($scope.allCourses.filter(function(term) {
+                makeTableFriendly($scope.semesterCourses.filter(function(course) {
                     
-                return  term.title.toLowerCase().includes($scope.current.classSearch.toLowerCase()) || 
-                        term.departmentCode.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
-                        term.departmentName.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
-                        term.courseNumber.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||;
+                return  course.courseName.toLowerCase().includes($scope.current.classSearch.toLowerCase()) || 
+                        course.departmentCode.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
+                        course.departmentName.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
+                        course.courseNumber.toLowerCase().includes($scope.current.classSearch.toLowerCase());
             }).sort(function(a, b) {
-                return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
+                return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
             })); 
         }
         
-        $scope.addClassFinal = function(item) {
-            let course = new Course(item, $scope.semester.season, $scope.semester.year);
-            course.reason = $scope.current[$scope.semester.year][$scope.semester.season][item].reason;          
-            
-            $scope.currentClasses.push(course);
-            $scope.selectedClasses.splice($scope.selectedClasses.indexOf(item), 1);
+        $scope.addClassFinal = function(course) {
+            let reason = $scope.current[$scope.semester.year][$scope.semester.season][course].reason;          
+            $scope.chosenCourses.push({
+                course: course,
+                reason: reason,
+            });
+            $scope.selectedClasses.splice($scope.selectedClasses.indexOf(course), 1);
         }
         
         $scope.removeClass = function(item) {
             $scope.selectedClasses.splice($scope.selectedClasses.indexOf(item), 1);
-            $scope.classes.push(item);
-            $scope.CompSci.push(item);
+            $scope.semesterCourses.push(item);
             $scope.updateClassSearch();
-            $scope.departmentUpdate();
-            
         }
         
         $scope.removeFromCurrentClasses = function(item) {
-            $scope.currentClasses.splice($scope.currentClasses.indexOf(item), 1);
-            $scope.classes.push(item.title);
-            $scope.CompSci.push(item);
+            $scope.chosenCourses.splice($scope.chosenCourses.indexOf(item), 1);
+            $scope.semesterCourses.push(item);
             $scope.updateClassSearch();
-            $scope.departmentUpdate();
         }
         
         $scope.submitForm = function() {
+            profile.setCoursesTaken($scope.chosenCourses.map(function(course) {
+                return course._id;
+            }));
+            let result = {
+                user: profile.getUser(),
+                profile: profile.getProfile(),                
+            }
             $http({
                 method: 'POST', 
-                url: '/',
-                data: $scope.current,
+                url: '/signUp',
+                data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             });
             $window.location.href = '/home';
         }
-        
-        $scope.departmentUpdate();
-        $scope.updateClassSearch();
     }
 });
 
@@ -381,5 +357,42 @@ myApp.service('whichPage', function() {
     return {
         set: function(text) {page = text},
         get: function() {return page}
+    }
+});
+
+
+myApp.service('profile', function() {
+    let profile = {
+        interests: [],
+        clubs: [],
+        majors: [],
+        minors: [],
+        chats: [],
+        coursesTaken: [],
+    }
+    
+    let user = {
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+    }
+    
+    
+    return {
+        setInterests: function(interests) {profile.interests = interests;},
+        setClubs: function(clubs) {profile.clubs = clubs;},
+        setMajors: function(majors) {profile.majors = majors;},
+        setMinors: function(minors) {profile.minors = minors;},
+        setCoursesTaken: function(coursesTaken) {profile.coursesTaken = coursesTaken;},
+        getProfile: function() {return profile;},
+        setUser: function(email, password, firstName, lastName) {
+            user.email = email;
+            user.password = password;
+            user.firstName = firstName;
+            user.lastName = lastName;
+        },
+        getUser: function() {return user;}
+        
     }
 })
