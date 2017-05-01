@@ -157,9 +157,16 @@ classFindApp.component('conversation', {
         
         $scope.user = profile.getProfile();
         $scope.conversations = $scope.user.chats                    
-        $scope.conversation.forEach(function(chat) {
+        $scope.conversations.forEach(function(chat) {
             if (chat._id == $routeParams.chatId) {
-                $scope.conversation = [];
+                $scope.conversation = chat;
+                $scope.conversation.messages.forEach(function(msg) {
+                    if (msg.sender != $scope.user._id) {
+                        msg.sent = false;
+                    } else {
+                        msg.sent = true;
+                    }
+                });
             }
         });
         
