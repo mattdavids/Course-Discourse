@@ -1,5 +1,13 @@
 classFindApp = angular.module('findClasses', ['ngRoute']);
 
+classFindApp.config(function($routeProvider) {
+    $routeProvider.when('/', {
+        template: '<class-find></class-find>'
+    }).when('/:chatId', {
+        template: '<conversation></conversation>'
+    }).otherwise('/');
+});
+
 classFindApp.component('headerTop', {
     templateUrl: 'headerTop.template.html',
 });
@@ -8,7 +16,7 @@ classFindApp.component('classFind', {
     templateUrl: 'classFind.template.html',
     controller: function($scope, $http, $window, $location, selectedChat) {
         
-        $scope.profile = {};
+        $scope.user = {};
         $scope.displayedRecommended = [];
         $scope.allClasses = [];
         $scope.conversations = [];
@@ -18,12 +26,18 @@ classFindApp.component('classFind', {
             url: '/profile',
         }).then(
             function(response) {
-                $scope.profile = response.data;
-                $scope.profile.chats.forEach(function(chat) {
-                    $scope.conversations.push(chat);
+                $scope.user = response.data;
+                $scope.user.chats.forEach(function(chat) {
+                    chat.members.forEach(function(member) {
+                        $scope.conversations.push({
+                            id: chat._id,
+                            topic: chat.topic,
+                        });
+                    });
+                    
                 });
         },  function(response) {
-            $location.path('/home');
+            $location.path('/');
         });
         
         $http({
@@ -33,7 +47,7 @@ classFindApp.component('classFind', {
             function(response) {
                 $scope.displayedRecommended = response.data;
         },  function(response) {
-            $location.path('/home');
+            $location.path('/');
         });
     
         $http({
@@ -55,7 +69,7 @@ classFindApp.component('classFind', {
                 
                 $scope.updateClassSearch();
         },  function(response) {
-            $location.path('/home');
+            $location.path('/');
         });
         
         $scope.selectedClasses = [];
@@ -112,8 +126,102 @@ classFindApp.component('classFind', {
                 arr.splice(indexOfItem, 1);
             }
         }
+        
+        $scope.gotoMessage = function(convo) {
+            if (convo.id) {
+                $location.path('/' + convo.id); 
+            }
+            else {
+                $http({
+                    method: 'GET',
+                    url: '/match/' + convo._id,
+                }).then(
+                    function(response) {
+                    $location.path('/' + response.data.id);
+                },  function(response) {
+                    $location.path('/');
+            }); 
+            }
+        }
     }
 });
+
+
+classFindApp.component('conversation', {
+    templateUrl: 'conversation.template.html',
+    controller: function($scope, $routeParams, conversationsService) {
+        
+        $scope.conversations = [];
+        
+        $scope.conversation = [];
+        
+        $http({
+            method: 'GET',
+            url: '/profile',
+        }).then(
+            function(response) {
+                $scope.user = response.data;
+                $scope.conversations = $scope.user.chats                    
+                $scope.conversation.forEach(function(chat) {
+                    if (chat._id == $routeParams.chatId) {
+                        $scope.conversation = [];
+                    }
+                });
+        },  function(response) {
+            $location.path('/');
+        });
+        
+    }
+});
+
+classFindApp.service('conversationsService', function() {
+    let conversations = [{
+        otherUser: 1, 
+        messages: [{
+                        sent: true, 
+                        text: 'Hi!'
+                    }, {
+                        sent: false, 
+                        text: 'Hello'
+                    }, {
+                        sent: true, 
+                        text: 'Did you like the prof for Comp 124?'
+                    }, {
+                        sent: false, 
+                        text: 'Yeah! They were awesome!'
+                    }]
+    } , {
+        otherUser: 2, 
+        messages: [{
+            sent: true, 
+            text: 'Hello?'
+        }, {
+            sent: true, 
+            text: 'Are you there??'
+        }, {
+            sent: false,
+            text: 'Sorry, I was at Cafe Mac! What questions do you have?'
+        }]
+    }, {
+        otherUser: 3, 
+        messages: [{
+            sent: true,
+            text: 'Bryro?!'
+        }]
+    }];
+
+    return {
+        all: function() { return conversations }, 
+        get: function (otherUserId) {
+            return conversations.find(function(convo) {
+                return convo.otherUser == otherUserId;    
+            });
+        }
+    };
+});
+
+
+
 
 classFindApp.service('selectedChat', function() {
     let selected = '';
