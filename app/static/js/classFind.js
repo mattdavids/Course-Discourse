@@ -153,7 +153,7 @@ classFindApp.component('classFind', {
         
         $scope.logout = function() {
             $http({
-                method: 'POST',
+                method: 'GET',
                 url: '/logout'
             }).then(function(response) {
                 $window.location.href('/');
