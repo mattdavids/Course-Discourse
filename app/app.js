@@ -180,6 +180,57 @@ app.get('/recommended', function(req, res) {
     });
 });
 
+app.get('/matches/:courseId', function(req, res) {
+    let courseId = req.params['courseId'];
+    Course.findById(courseId, function(err, course) {
+        if (err) {
+            return res.end('{err: "database error", msg : "' + err + '"}');
+        }
+
+        if (!course) {
+            res.end('{err: "course not found"}');
+        }
+
+        Course.find({$and : [{_id: {$ne : courseId} }, {courseName: course.courseName}]}, function(err, courses) {
+            if (err) {
+                return res.end('{err: "database error", msg : "' + err + '"}');
+            }
+
+            if (!courses) {
+                return res.end('{err: "course search failed"}');
+            }
+
+            let courseIds = courses.map((course) => course._id);
+            User.find({$and: [{_id : {$ne : req.user._id}}, {coursesTaken: {$elemMatch: {course: {$in : courseIds}}}}]}, function(err, users) {
+                if (err) {
+                    return res.end('{err: "database error", msg : "' + err + '"}');
+                }
+
+                if (!users) {
+                    return res.end('{err: "user search failed"}');
+                }
+
+                if (users.length === 0) {
+                    return res.end('{msg: "no other users found"}');
+                }
+
+                let match = users[0];
+                let chat = new Chat();
+                chat.members = [req.user._id, match._id];
+                chat.topic = course.courseNumber;
+
+                match.chats.push(chat);
+                req.user.chats.push(chat);
+
+                req.user.save();
+                match.save();
+                chat.save();
+                res.end(JSON.stringify(chat));
+             })
+        });
+    })
+});
+
 function respondWithCourses(res, err, courses) {
     if (err) {
         res.statusCode = 500;
