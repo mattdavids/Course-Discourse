@@ -33,7 +33,7 @@
                             <tbody>
                                 <tr ng-repeat="interest in currentInterests">
                                     <td>
-                                    <button class="btn btn-default btn-sm" id="{{interest}}" ng-click="deleteInterest(interest)">Remove {{interest}}</button>
+                                    <button class="btn btn-sm btn-danger" id="{{interest}}" ng-click="deleteInterest(interest)">Remove {{interest}}</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -72,7 +72,7 @@
                             <tbody>
                                 <tr ng-repeat="club in currentClubs">
                                     <td>
-                                    <button class="btn btn-default btn-sm" id="{{club}}" ng-click="deleteClub(club)">Remove {{club}}</button>
+                                    <button class="btn btn-sm btn-danger" id="{{club}}" ng-click="deleteClub(club)">Remove {{club}}</button>
                                     </td>
                                 </tr>
                             </tbody>
