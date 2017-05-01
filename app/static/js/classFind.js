@@ -175,7 +175,7 @@ classFindApp.component('conversation', {
         
         $scope.sendMessage = function() {
             
-            $scope.conversation.push({
+            $scope.conversation.messages.push({
                 sender: $scope.user._id,
                 senderName: $scope.user.firstName,
                 sentAt: Date.now(),
@@ -249,7 +249,9 @@ classFindApp.service('conversationsService', function() {
 
 
 classFindApp.factory('socket', function($rootScope) {
-    let socket = io.connect();
+    let socket = io.connect('localhost:3000');
+    console.log('dpg');
+
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function() {
