@@ -27,6 +27,8 @@ myApp.component('emailPassword', {
         
         $scope.submitForm = function() {
             profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
+            profile.setEmail($scope.user.email);
+            profile.setPassword($scope.user.password);
             $location.path('/major');
         }
     }
@@ -341,7 +343,9 @@ myApp.component('classSelect', {
             }));
             let result = {
                 user: profile.getUser(),
-                profile: profile.getProfile(),                
+                profile: profile.getProfile(),
+                email: profile.getEmail(),
+                password: profile.getPassword(),
             }
             $http({
                 method: 'POST', 
@@ -380,6 +384,9 @@ myApp.service('profile', function() {
         lastName: '',
     }
     
+    let email = '';
+    let password = '';
+    
     
     return {
         setInterests: function(interests) {profile.interests = interests;},
@@ -394,6 +401,10 @@ myApp.service('profile', function() {
             user.firstName = firstName;
             user.lastName = lastName;
         },
+        setEmail: function(email) {email = email; },
+        setPassword: function(password) {password = password; },
+        getEmail: function() {return email; },
+        getPassword: function() {return password; },
         getUser: function() {return user;}
         
     }
