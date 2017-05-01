@@ -342,7 +342,6 @@ myApp.component('classSelect', {
             }));
             let result = {
                 user: JSON.stringify(profile.getUser()),
-                profile: JSON.stringify(profile.getProfile()),
                 email: profile.getEmail(),
                 password: profile.getPassword(),
             }
@@ -359,9 +358,9 @@ myApp.component('classSelect', {
                 data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(function(response) {
-                $window.location.href = '/home'
+                //$window.location.href = '/home'
             }, function(response) {
-                $window.location.href = '/home'
+                //$window.location.href = '/home'
             });
         }
     }
@@ -377,30 +376,27 @@ myApp.service('whichPage', function() {
 });
 
 
-myApp.service('profile', function() {
-    let profile = {
+myApp.service('profile', function() {    
+    let user = {
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
         interests: [],
         clubs: [],
         majors: [],
         minors: [],
         chats: [],
         coursesTaken: [],
-    }
-    
-    let user = {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
+        
     }    
     
     return {
-        setInterests: function(interests) {profile.interests = interests; },
-        setClubs: function(clubs) {profile.clubs = clubs;},
-        setMajors: function(majors) {profile.majors = majors;},
-        setMinors: function(minors) {profile.minors = minors;},
-        setCoursesTaken: function(coursesTaken) {profile.coursesTaken = coursesTaken;},
-        getProfile: function() {return profile;},
+        setInterests: function(interests) {user.interests = interests; },
+        setClubs: function(clubs) {user.clubs = clubs;},
+        setMajors: function(majors) {user.majors = majors;},
+        setMinors: function(minors) {user.minors = minors;},
+        setCoursesTaken: function(coursesTaken) {user.coursesTaken = coursesTaken;},
         setUser: function(email, password, firstName, lastName) {
             user.email = email;
             user.password = password;
