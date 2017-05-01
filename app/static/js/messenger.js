@@ -10,7 +10,6 @@ messengerApp.component('conversation', {
     templateUrl: 'conversation.template.html',
     controller: function($scope, $routeParams, conversationsService) {
         $scope.conversation = conversationsService.get($routeParams.userId);
-        console.log($scope.conversation);
     }
 });
 

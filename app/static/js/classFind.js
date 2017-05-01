@@ -11,7 +11,7 @@ classFindApp.config(function($routeProvider) {
 
 
 classFindApp.component('headerTop', {
-    templateUrl: 'headerTop.template.html',
+    templateUrl: 'templates/headerTop.template.html',
     controller: function($scope, $http, $location, $window) {
         $scope.logout = true;
         
@@ -27,7 +27,7 @@ classFindApp.component('headerTop', {
 });
 
 classFindApp.component('classFind', {
-    templateUrl: 'classFind.template.html',
+    templateUrl: 'templates/classFind.template.html',
     controller: function($scope, $http, $window, $location, profile) {
         $scope.logout = true;
         
@@ -164,7 +164,7 @@ classFindApp.component('classFind', {
 
 
 classFindApp.component('conversation', {
-    templateUrl: 'conversation.template.html',
+    templateUrl: 'templates/conversation.template.html',
     controller: function($scope, $http, $routeParams, $location, conversationsService, profile, socket) {
         
         $scope.conversations = [];

@@ -13,14 +13,14 @@ myApp.config(function($routeProvider) {
 });
 
 myApp.component('headerTop', {
-    templateUrl: 'headerTop.template.html',
+    templateUrl: 'templates/headerTop.template.html',
     controller: function($scope, whichPage) {
         $scope.currentPage = whichPage.get();
     }
 });
 
 myApp.component('emailPassword', {
-    templateUrl: 'emailPassword.template.html',
+    templateUrl: 'templates/emailPassword.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
         whichPage.set('Name, Email, and Password');
         $scope.user = {};
@@ -33,7 +33,7 @@ myApp.component('emailPassword', {
 });
 
 myApp.component('nameMajor', {
-    templateUrl: 'nameMajor.template.html',
+    templateUrl: 'templates/nameMajor.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
         
         whichPage.set('Majors and Minors');
@@ -133,7 +133,7 @@ myApp.component('nameMajor', {
 });
 
 myApp.component('interestSelect', {
-    templateUrl: 'interestSelect.template.html',
+    templateUrl: 'templates/interestSelect.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
         whichPage.set('Select Interests and Clubs');
         
@@ -228,7 +228,7 @@ myApp.component('interestSelect', {
 });
 
 myApp.component('classSelect', {
-    templateUrl: 'classSelect.template.html',
+    templateUrl: 'templates/classSelect.template.html',
     controller: function($scope, $http, $window, $location, whichPage, profile) {
         whichPage.set('Previously taken Courses');
         
@@ -334,7 +334,6 @@ myApp.component('classSelect', {
         
         $scope.submitForm = function() {
             profile.setCoursesTaken($scope.chosenCourses.map(function(course) {
-                console.log(course)
                 return {
                     course: course.course._id,
                     reason: course.reason,

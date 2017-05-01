@@ -40,7 +40,6 @@ const chatSchema = new Schema({
 });
 
 chatSchema.methods.isMember = function(userId) {
-    console.log(this.members);
     return this.members.some((memberId) => { return memberId.equals(userId); });
 }
 
