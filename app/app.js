@@ -76,6 +76,7 @@ const Course = models.Course;
 const Data = models.Data;
 
 const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 mongoose.connect(dbURL)
 
 // Home page
@@ -145,20 +146,30 @@ app.get('/courses/:year/:season', function(req, res){
     Course.find({ $and : [{ year : '' + courseYear}, { season : courseSeason}] }, 
                 { _id : false }, 
                 function (err, courses) {
-        if (err) {
-            res.statusCode = 500;
-            return res.end();
-        } 
+        respondWithCourses(res, err, courses);
+    });
+});
 
-        if (courses == null) {
-            res.statusCode = 404;
-            return res.end(JSON.stringify({}));
-        }
-
-        res.statusCode = 200;
-        res.end(JSON.stringify(courses));
+app.get('/courses', function(req, res) {
+    Course.find({}, {_id : false}, function(err, courses) {
+        respondWithCourses(res, err, courses);
     });
 })
+
+function respondWithCourses(res, err, courses) {
+    if (err) {
+        res.statusCode = 500;
+        return res.end();
+    } 
+
+    if (courses == null) {
+        res.statusCode = 404;
+        return res.end(JSON.stringify({}));
+    }
+
+    res.statusCode = 200;
+    res.end(JSON.stringify(courses));
+}
 
 app.get('/profile', function(req, res) {
     if (!req.user) {
