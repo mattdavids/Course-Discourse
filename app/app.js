@@ -65,7 +65,8 @@ io.use(passportSocketIo.authorize({
   cookieParser: cookieParser,
 }));
 
-require('./chat.js')(io);
+let chatAPI = require('./chat.js');
+chatAPI.init(io);
 
 /* Setup Mongoose */
 const models = require('./models')

@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models').User;
+const Profile = require('./models').Profile;
 
 let loginStrategy = new LocalStrategy({
         usernameField: 'email', 
@@ -7,6 +8,8 @@ let loginStrategy = new LocalStrategy({
         passReqToCallback: true,
     }, 
     function(req, email, password, done) {
+        console.log('dfasdf');
+        
         User.findOne({ email : email }, function(err, user) {
 
             if (err) {
@@ -32,30 +35,33 @@ let loginStrategy = new LocalStrategy({
 );
 
 const signupStrategy = new LocalStrategy({
-        usernameField: 'email', 
-        passwordField: 'password', 
+        usernameField: 'user', 
+        passwordField: 'profile', 
         passReqToCallback: true,
     },
-    function(req, email, password, done) {
+    function(req, userJSON, profileJSON, done) {
+        let user = JSON.parse(userJSON);
+        let profile = JSON.parse(profileJSON);
+        
         process.nextTick(() => {
-            User.findOne({ email : email }, function(err, user) {
+            User.findOne({ email : user.email }, function(err, otherUser) {
                 if (err) {
                     console.log('signup db error: ' + err);
                     return done(err, false);
                 }
 
-                if (user) {
+                if (otherUser) {
                     return done(null, false);
                 } else {
-                    let newUser = new User();
-                    newUser.email = email;
-                    newUser.password = password;
-                    newUser.firstName = req.params['firstName'];
-                    newUser.lastName = req.params['lastName'];
-
-                    let userProfile = new Profile();
+                    let newUser = new User(user);
+                    // // newUser.email = email;
+                    // newUser.password = password;
+                    // newUser.firstName = req.params['firstName'];
+                    // newUser.lastName = req.params['lastName'];
+                    
+                    let userProfile = new Profile(profile);
                     newUser.profile = userProfile;
-
+                    
                     newUser.save().then(
                         () => userProfile.save().then( 
                             () => done(null, newUser),

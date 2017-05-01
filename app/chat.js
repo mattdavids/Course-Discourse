@@ -73,4 +73,16 @@ function init(io) {
     });
 }
 
-module.exports = init;
+function notifyOfChatCreation(chatCreated) {
+    for (let memberId of chatCreated.members) {
+        let userSocket = connectedUsers[memberId]
+        if (userSocket) {
+            userSocket.emit('chat-created', chatCreated);
+        }
+    }
+}
+
+module.exports = {
+    init: init, 
+    notifyOfChatCreation: notifyOfChatCreation, 
+}
