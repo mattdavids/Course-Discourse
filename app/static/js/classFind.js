@@ -8,13 +8,19 @@ classFindApp.config(function($routeProvider) {
     }).otherwise('/');
 });
 
+
+
 classFindApp.component('headerTop', {
     templateUrl: 'headerTop.template.html',
+    controller: function($scope) {
+        $scope.logout = true;
+    }
 });
 
 classFindApp.component('classFind', {
     templateUrl: 'classFind.template.html',
     controller: function($scope, $http, $window, $location, profile) {
+        $scope.logout = true;
         
         $scope.user = {};
         $scope.displayedRecommended = [];
@@ -26,7 +32,6 @@ classFindApp.component('classFind', {
             url: '/profile',
         }).then(
             function(response) {
-                console.log('donecat');
                 
                 profile.setProfile(response.data);
                 $scope.user = response.data;
@@ -145,6 +150,15 @@ classFindApp.component('classFind', {
             }); 
             }
         }
+        
+        $scope.logout = function() {
+            $http({
+                method: 'POST',
+                url: '/logout'
+            }).then(function(response) {
+                $window.location.href('/');
+            });
+        }
     }
 });
 
@@ -167,22 +181,27 @@ classFindApp.component('conversation', {
             function(response) {
                 profile.setProfile(response.data);
                 $scope.user = profile.getProfile();
+                readDataChats();
+            });
+        } else {
+            readDataChats();
+        }
+        
+        function readDataChats() {
+            $scope.conversations = $scope.user.chats                    
+            $scope.conversations.forEach(function(chat) {
+                if (chat._id == $routeParams.chatId) {
+                    $scope.conversation = chat;
+                    $scope.conversation.messages.forEach(function(msg) {
+                        if (msg.sender != $scope.user._id) {
+                            msg.sent = false;
+                        } else {
+                            msg.sent = true;
+                        }
+                    });
+                }
             });
         }
-
-        $scope.conversations = $scope.user.chats                    
-        $scope.conversations.forEach(function(chat) {
-            if (chat._id == $routeParams.chatId) {
-                $scope.conversation = chat;
-                $scope.conversation.messages.forEach(function(msg) {
-                    if (msg.sender != $scope.user._id) {
-                        msg.sent = false;
-                    } else {
-                        msg.sent = true;
-                    }
-                });
-            }
-        });
         
         $scope.sendMessage = function() {
             
@@ -271,7 +290,6 @@ classFindApp.service('conversationsService', function() {
 
 classFindApp.factory('socket', function($rootScope) {
     let socket = io.connect('localhost:3000');
-    console.log('dpg');
 
     return {
         on: function (eventName, callback) {
