@@ -358,9 +358,9 @@ myApp.component('classSelect', {
                 data: result,
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(function(response) {
-                //$window.location.href = '/home'
+                $window.location.href = '/home'
             }, function(response) {
-                //$window.location.href = '/home'
+                $window.location.href = '/home'
             });
         }
     }
