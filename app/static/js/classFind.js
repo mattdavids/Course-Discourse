@@ -28,11 +28,9 @@ classFindApp.component('classFind', {
             function(response) {
                 $scope.user = response.data;
                 $scope.user.chats.forEach(function(chat) {
-                    chat.members.forEach(function(member) {
-                        $scope.conversations.push({
-                            id: chat._id,
-                            topic: chat.topic,
-                        });
+                    $scope.conversations.push({
+                        id: chat._id,
+                        topic: chat.topic,
                     });
                     
                 });
@@ -115,9 +113,10 @@ classFindApp.component('classFind', {
 
         $scope.removeFromSelected = function(classToRemove){
             removeFromArray($scope.conversations, classToRemove);
-            $scope.allClasses.push(classToRemove);
-            $scope.updateClassSearch();
-
+            if (!classToRemove.topic) {
+                $scope.allClasses.push(classToRemove);
+                $scope.updateClassSearch();
+            }
         }
 
         function removeFromArray(arr, item) {
