@@ -13,12 +13,10 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Search Results</th>
-                                </tr>
-                            </thead>
+                        <br />
+                        <span class="h4">Search Results</span>
+                        <div class="pre-scrollable" height='140px'>
+                        <table class="table pre-scrollable">
                             <tbody>
                                 <tr ng-repeat="major in majorsResult">
                                     <td>
@@ -28,13 +26,12 @@
                             </tbody>
                         </table>
                     </div>
+                    </div>
                     <div class="col-md-6">
+                        <br />
+                        <span class="h4">Already Added</span>
+                        <div class="pre-scrollable" height='140px'>
                         <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Already Added</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 <tr ng-repeat="major in currentMajors">
                                     <td>
@@ -43,6 +40,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
         </div>
@@ -54,12 +52,10 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6">
+                        <br />
+                        <span class="h4">Search Results</span>
+                        <div class="pre-scrollable" height='140px'>
                         <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Search Results</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 <tr ng-repeat="minor in minorsResult">
                                     <td>
@@ -69,13 +65,12 @@
                             </tbody>
                         </table>
                     </div>
+                    </div>
                     <div class="col-md-6">
+                        <br />
+                        <span class="h4">Already Added</span>
+                        <div class="pre-scrollable" height='140px'>
                         <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Already Added</th>
-                                </tr>
-                            </thead>
                             <tbody>
                                 <tr ng-repeat="minor in currentMinors">
                                     <td>
@@ -84,6 +79,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
         </div>
