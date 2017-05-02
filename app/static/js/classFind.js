@@ -87,17 +87,14 @@ classFindApp.component('classFind', {
             url: '/courses/currentYear',
         }).then(
             function(response) {
-                $scope.allClasses = response.data;
-                $scope.allClasses.sort(function(a, b) {
+                let temp = response.data.sort(function(a, b) {
                     return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
                 });
-                let result = [];
-                for (let i = 0; i < $scope.allClasses.length - 1; i ++) {
-                    if ($scope.allClasses[i + 1].courseName != $scope.allClasses[i].courseName) {
-                        result.push($scope.allClasses[i]);
+                for (let i = 0; i < temp.length - 1; i ++) {
+                    if (temp[i + 1].courseName != temp[i].courseName) {
+                        $scope.allClasses.push(temp[i]);
                     }
                 }  
-                $scope.allClasses = result;
                 
                 $scope.updateClassSearch();
         },  function(response) {
@@ -191,10 +188,14 @@ classFindApp.component('classFind', {
                     url: '/match/' + convo._id,
                 }).then(
                     function(response) {
-                    $location.path('/' + response.data._id);
                         if (response.data.msg) {
                             convo.noMatch = true;
                         } else {
+                            keepTopic.setTopic(convo.departmentCode + ' ' + convo.courseNumber);
+                            keepTopic.setId(response.data._id);
+                            $location.path('/' + response.data._id);
+                        }
+
                 },  function(response) {
                         $location.path('/');
                         convo.noMatch = true;
@@ -207,7 +208,8 @@ classFindApp.component('classFind', {
 
 classFindApp.component('conversation', {
     templateUrl: 'templates/conversation.template.html',
-    controller: function($scope, $http, $routeParams, $location, conversationsService, profile, socket) {
+    controller: function($scope, $http, $routeParams, $location, $rootScope, conversationsService, profile, socket, keepTopic) {
+        $scope.location = $location;
         
         $scope.conversations = [];
         
