@@ -224,7 +224,7 @@ app.get('/match/:courseId', function(req, res) {
                 let match = users[0];
                 let chat = new Chat();
                 chat.members = [req.user._id, match._id];
-                chat.topic = course.courseNumber;
+                chat.topic = course.departmentCode + " " + course.courseNumber;
 
                 match.chats.push(chat);
                 req.user.chats.push(chat);
