@@ -28,7 +28,7 @@ classFindApp.component('headerTop', {
 
 classFindApp.component('classFind', {
     templateUrl: 'templates/classFind.template.html',
-    controller: function($scope, $http, $window, $location, profile) {
+    controller: function($scope, $http, $window, $location, profile, keepTopic) {
         $scope.logout = true;
         
         $scope.user = {};
