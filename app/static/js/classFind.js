@@ -130,7 +130,21 @@ classFindApp.component('classFind', {
 
         $scope.removeFromSelected = function(classToRemove){
             removeFromArray($scope.conversations, classToRemove);
-            if (!classToRemove.topic) {
+            if(!classToRemove.courseName) {
+                $http({
+                    method: 'POST',
+                    url: '/remove',
+                    transformRequest: function(obj) {
+                    var str = [];
+                    for(var p in obj) {
+                        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    }
+                    return str.join("&");
+                },
+                    data: classToRemove,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                });
+            } else {
                 $scope.allClasses.push(classToRemove);
                 $scope.updateClassSearch();
             }

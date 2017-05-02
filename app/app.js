@@ -277,6 +277,18 @@ app.get('/profile', function(req, res) {
     });
 });
 
+app.post('/remove', function(req, res) {
+   if (!req.user) {
+       req.statusCode = 403;
+       return res.end(JSON.stringify({error : 'You must be logged in'}));
+   } 
+    
+    Chat.findByIdAndRemove(req.body.id, function(){}).remove();
+    req.statusCode = 302;
+
+});
+
+
 app.use(express.static(__dirname + '/static'));   
 
 server.listen(3000, function() {
