@@ -23,11 +23,54 @@ myApp.component('emailPassword', {
     templateUrl: 'templates/emailPassword.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
         whichPage.set('Name, Email, and Password');
-        $scope.user = {};
+        $scope.user = {
+            firstName: '',
+            lastName: '',
+            password: '',
+            password2: '',
+            email: '',
+        };
+        $scope.invalidFirstName = false;
+        $scope.invalidLastName = false;
+        $scope.invalidEmail = false;
+        $scope.invalidPassword = false;
+        $scope.invalidPassword2 = false;
         
         $scope.submitForm = function() {
-            profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
-            $location.path('/major');
+            if($scope.user.firstName == '') {
+                $scope.invalidFirstName = true;
+            } else {
+                $scope.invalidFirstName = false;
+            }
+            if($scope.user.lastName == '') {
+                $scope.invalidLastName = true;
+            } else {
+                $scope.invalidLastName = false;
+            }
+            if($scope.user.password.length < 8) {
+                $scope.invalidPassword = true;
+            } else {
+                $scope.invalidPassword = false;
+            }
+            if($scope.user.password2.length < 8 || $scope.user.password != $scope.user.password2) {
+                $scope.invalidPassword2 = true;
+            } else {
+                $scope.invalidPassword2 = false;
+            }
+            if(!$scope.user.email.includes('@macalester.edu')) {
+                $scope.invalidEmail = true;
+            } else {
+                $scope.invalidEmail = false;
+            }
+            
+            if (validInput()) {
+                profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
+                $location.path('/major');
+            }
+        }
+        
+        function validInput() {
+            return !$scope.invalidEmail && !$scope.invalidFirstName && !$scope.invalidLastName && !$scope.invalidPassword && !$scope.invalidPassword2;
         }
     }
 });
