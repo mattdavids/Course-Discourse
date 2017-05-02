@@ -38,11 +38,11 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <p class="h4">Classes for {{semester.season}} {{semester.year}}</p>
+                <p class="h4">Classes for {{season}} {{year}}</p>
                 <table class="table">
                     <tbody>
                         <tr ng-repeat="class in chosenCourses">
-                            <td ng-if="class.course.season == semester.season && class.course.year == semester.year">
+                            <td ng-if="class.course.season == season && class.course.year == year">
                                 {{class.course.courseName}}  <input type="button" class="btn btn-sm btn-danger" id="{{class}}Current" ng-click="removeFromCurrentClasses(class.course)" value="Remove" />
                             </td>
                         </tr>

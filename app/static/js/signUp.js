@@ -292,6 +292,9 @@ myApp.component('classSelect', {
         
         $scope.allCourses = [];
         
+        $scope.season = '';
+        $scope.year = '';
+        
         $scope.current = {
             classSearch: '',
             department: ''
@@ -324,9 +327,14 @@ myApp.component('classSelect', {
         $scope.currentClasses = [];
         
         $scope.updateSemesterCourses = function(season, year) {
+            $scope.season = season;
+            $scope.year = year;
             $scope.semesterCourses = $scope.allCourses.filter(function(course) {
                 return course.season == season && course.year == year;
             });
+            $scope.selectedClasses.forEach(function(course) {
+                $scope.removeClass(course);
+            });            
             $scope.updateClassSearch();
         }
         
