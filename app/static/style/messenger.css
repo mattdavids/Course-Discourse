@@ -34,3 +34,7 @@
 .sent {
     display: inline-block;
 }
+
+b {
+    color: aqua;
+}

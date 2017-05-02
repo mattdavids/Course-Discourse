@@ -37,7 +37,7 @@ function init(io) {
 
                 for (let memberId of chat.members) {
                     if (!memberId.equals(user._id) && connectedUsers[memberId]) {
-                        connectedUsers[memberId].emit('receiveMessage', {chatId: chat._id, message: message});
+                        connectedUsers[memberId].emit('receiveMessage', {chatId: chat._id, message: message, topic: chat.topic});
                     }
                 }
             });

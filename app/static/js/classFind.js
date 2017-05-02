@@ -215,6 +215,18 @@ classFindApp.component('conversation', {
                     });
                 }
             });
+            
+            $scope.isNewChat = true;
+            $scope.conversations.forEach(function(chat) {
+                if ('/' + chat._id == $location.path()) {
+                    $scope.isNewChat = false;
+                }
+            });
+            if($scope.isNewChat) {
+                $scope.conversation.topic = keepTopic.getTopic();
+                $scope.conversation._id = keepTopic.getId();
+                $scope.conversations.push($scope.conversation);
+            }
         }
         
         $scope.sendMessage = function() {
@@ -335,6 +347,17 @@ classFindApp.service('profile', function() {
             this.user = profile1; 
         },
         getProfile: function() {return this.user; },
+    }
+});
+
+classFindApp.service('keepTopic', function() {
+    let topic = '';
+    let id = '';
+    return {
+        getTopic: function() {return this.topic; },
+        setTopic: function(topic) {this.topic = topic; },
+        getId: function() {return this.id; },
+        setId: function(id) {this.id = id; }
     }
 })
     

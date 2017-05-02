@@ -2,12 +2,16 @@
 <link rel="stylesheet" href="style/messenger.css">
 <div class="navbar navbar-inverse navbar-fixed-left">
     <ul class="nav navbar-nav">
-        <li ng-repeat="chat in conversations">
-            
-        <a ng-repeat="member in chat.members" ng-if="member == user._id" href="#!/{{chat._id}}">{{chat.topic}}</a>
+        <li ng-repeat="chat in conversations">            
+            <a ng-repeat="member in chat.members" ng-if="member == user._id" href="#!/{{chat._id}}"><b ng-if="location.path() == '/' + chat._id">{{chat.topic}}</b><span ng-if="location.path() != '/' + chat._id">{{chat.topic}}</span></a>
+        </li>
+        <li ng-if="isNewChat">
+            <a href="#!/conversation._id"><b>{{conversation.topic}}</b></a>
+        </li>
+        <li>
+            <a href="#" ng-click="back()">Back</a>
         </li>
     </ul>
-    <button class="btn btn-default btn-sm center-block" style="margin-top: 100px" ng-click="back()">Back</button>
 </div>
 <div class="container-fluid footer">
     <div id='message-area' class="container-fluid">
