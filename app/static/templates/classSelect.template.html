@@ -59,8 +59,8 @@
                                 <input type="button" class="btn btn-sm btn-danger" id="{{course}}selected" ng-click="removeClass(course) " value="Remove {{course.courseName}}" />
                             </td>
                             <td>
-                                <span>Why?</span>
-                                <select ng-model="current[semester.year][semester.season][course].reason">
+                                <span style="color: red;" ng-if="course.noReason">*Required: </span><span>Why?</span>
+                                <select ng-model="course.reason">
                                     <option ng-repeat="reason in reasons" value="{{reason}}">{{reason}}</option>
                                 </select>
                             </td>

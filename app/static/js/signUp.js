@@ -378,12 +378,16 @@ myApp.component('classSelect', {
         }
         
         $scope.addClassFinal = function(course) {
-            let reason = $scope.current[$scope.semester.year][$scope.semester.season][course].reason;          
-            $scope.chosenCourses.push({
+            if (course.reason) {
+                course.noReason = false;
+                $scope.chosenCourses.push({
                 course: course,
-                reason: reason,
+                reason: course.reason,
             });
             $scope.selectedClasses.splice($scope.selectedClasses.indexOf(course), 1);
+            } else {
+                course.noReason = true;
+            }
         }
         
         $scope.removeClass = function(item) {
