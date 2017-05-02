@@ -35,6 +35,7 @@ classFindApp.component('classFind', {
         $scope.displayedRecommended = [];
         $scope.allClasses = [];
         $scope.conversations = [];
+        $scope.recommended = [];
         
         $http({
             method: 'GET',
@@ -137,11 +138,11 @@ classFindApp.component('classFind', {
 
         $scope.createConversation = function(classDiscussing) {
             removeFromArray($scope.allClasses, classDiscussing);
-            removeFromArray($scope.displayedRecommended, classDiscussing);
+            removeFromArray($scope.recommended, classDiscussing);
+            $scope.displayedRecommended = makeTableFriendly($scope.recommended);
             $scope.conversations.push(classDiscussing);
 
             $scope.updateClassSearch();
-            $scope.displayedRecommended = $scope.displayedRecommended;
         }
 
         $scope.removeFromSelected = function(classToRemove){
@@ -163,6 +164,12 @@ classFindApp.component('classFind', {
             } else {
                 classToRemove.noMatch = false;
                 $scope.allClasses.push(classToRemove);
+                if(classToRemove.recommended) {
+                    $scope.recommended.push(classToRemove);
+                    $scope.displayedRecommended = makeTableFriendly($scope.recommended.sort(function(a, b) {
+                        return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                    }));
+                }
                 $scope.updateClassSearch();
             }
         }
