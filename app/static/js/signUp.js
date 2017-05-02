@@ -33,6 +33,7 @@ myApp.component('emailPassword', {
         $scope.invalidFirstName = false;
         $scope.invalidLastName = false;
         $scope.invalidEmail = false;
+        $scope.emailTaken = false;
         $scope.invalidPassword = false;
         $scope.invalidPassword2 = false;
         
@@ -59,18 +60,32 @@ myApp.component('emailPassword', {
             }
             if(!$scope.user.email.includes('@macalester.edu')) {
                 $scope.invalidEmail = true;
+                $scope.emailTaken = false;
             } else {
                 $scope.invalidEmail = false;
+                    $http({
+                        method: 'GET',
+                        url: '/checkUser/' + $scope.user.email,
+                    }).then(function(response) {
+                        if (response.data.validUser) {
+                            $scope.emailTaken = false;
+                        } else {
+                            $scope.emailTaken = true;
+                        }
+                        if (validInput()) {
+                            profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
+                            $location.path('/major');
+                        }
+                        
+                    }, function(response) {
+                        $scope.emailTaken = true;
+                    });
             }
             
-            if (validInput()) {
-                profile.setUser($scope.user.email, $scope.user.password, $scope.user.firstName, $scope.user.lastName);
-                $location.path('/major');
-            }
         }
         
         function validInput() {
-            return !$scope.invalidEmail && !$scope.invalidFirstName && !$scope.invalidLastName && !$scope.invalidPassword && !$scope.invalidPassword2;
+            return !$scope.invalidEmail && !$scope.invalidFirstName && !$scope.invalidLastName && !$scope.invalidPassword && !$scope.invalidPassword2 && !$scope.emailTaken;
         }
     }
 });

@@ -288,6 +288,24 @@ app.post('/remove', function(req, res) {
 
 });
 
+app.get('/checkUser/:email', function(req, res) {
+    let email = req.params['email'];
+    User.findOne({ email : email }, function(err, user) {
+
+        if (err) {
+            console.log('login db error: ' + err);
+            res.end(JSON.stringify({validUser: false}));
+        }
+
+        if (!user) {
+            res.end(JSON.stringify({validUser: true}));
+        } else {
+            res.end(JSON.stringify({validUser: false}));
+        }
+
+    });
+});
+
 
 app.use(express.static(__dirname + '/static'));   
 
