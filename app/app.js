@@ -111,8 +111,13 @@ app.get('/home*', (req, res) => {
 // Login/Signup posts
 app.post('/login', passport.authenticate('login', {
     successRedirect : '/home',
-    failureRedirect : '/login',
+    failureRedirect : '/loginFailed',
 }));
+
+app.get('/loginFailed', function(req, res) {
+    res.statusCode = 403;
+    res.sendFile(__dirname + '/static/loginFailed.html');
+});
 
 app.post('/signup', passport.authenticate('signup', {
     successRedirect : '/home', 
