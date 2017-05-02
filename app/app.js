@@ -176,7 +176,7 @@ app.get('/recommended', function(req, res) {
     
     let user = req.user;
     if (user.majors.length === 0) {
-        res.end({});
+        res.end(JSON.stringify({}));
         return;
     }
     
