@@ -60,7 +60,23 @@ classFindApp.component('classFind', {
             url: '/recommended',
         }).then(
             function(response) {
-                $scope.displayedRecommended = makeTableFriendly(response.data);
+                if (!$.isEmptyObject(response.data)) {
+                    let temp = response.data.sort(function(a, b) {
+                        return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                    });
+                    for (let i = 0; i < temp.length - 1; i ++) {
+                        if (temp[i + 1].courseName != temp[i].courseName) {
+                            $scope.recommended.push(temp[i]);
+                        }
+                    }
+                    $scope.recommended.map(function(item) {
+                        item.recommended = true;
+                        return item;
+                    });
+                    $scope.displayedRecommended = makeTableFriendly($scope.recommended.sort(function(a, b) {
+                        return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                    }));
+                }
         },  function(response) {
             $location.path('/');
         });
