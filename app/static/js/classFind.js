@@ -145,6 +145,7 @@ classFindApp.component('classFind', {
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 });
             } else {
+                classToRemove.noMatch = false;
                 $scope.allClasses.push(classToRemove);
                 $scope.updateClassSearch();
             }
@@ -168,8 +169,12 @@ classFindApp.component('classFind', {
                 }).then(
                     function(response) {
                     $location.path('/' + response.data._id);
+                        if (response.data.msg) {
+                            convo.noMatch = true;
+                        } else {
                 },  function(response) {
-                    $location.path('/');
+                        $location.path('/');
+                        convo.noMatch = true;
             }); 
             }
         }
