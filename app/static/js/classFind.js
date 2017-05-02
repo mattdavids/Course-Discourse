@@ -211,7 +211,11 @@ classFindApp.component('conversation', {
         
         $scope.conversations = [];
         
-        $scope.conversation = [];
+        $scope.conversation = {
+            members: [],
+            topic: '',
+            messages: [],
+        };
         
         $scope.user = profile.getProfile();
         
@@ -258,7 +262,6 @@ classFindApp.component('conversation', {
         }
         
         $scope.sendMessage = function() {
-            
             $scope.conversation.messages.push({
                 sender: $scope.user._id,
                 senderName: $scope.user.firstName,
@@ -273,6 +276,7 @@ classFindApp.component('conversation', {
             });
             
             $scope.msgText = '';
+            
         }
         
         socket.on('receiveMessage', function(obj) {
@@ -280,10 +284,7 @@ classFindApp.component('conversation', {
                 if (chat._id == obj.chatId) {
                     obj.message.sent = false;
                     chat.messages.push(obj.message);
-
-                    if (obj.chatId == $routeParams.chatId) {
-                        $scope.conversation.push(obj.message);
-                    }
+                    $scope.conversation = chat;
                 }
             });
         });
