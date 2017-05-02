@@ -20,10 +20,12 @@
             <div align='left' ng-if='msg.sent == false'><div class="well msg">{{msg.text}}</div></div>
         </div>
     </div>
+    <form ng-submit="sendMessage()">
     <div class="input-group">
         <input type="text" ng-model='msgText' class="form-control" placeholder="message">
         <span class="input-group-btn">
-            <button class="btn btn-primary"  type="button" ng-click="sendMessage()">Send</button>
+                <input class="btn btn-primary" type="submit" value="Send" />
         </span>
     </div>
+    </form>
 </div>
