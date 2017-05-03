@@ -22,7 +22,7 @@ myApp.component('headerTop', {
 myApp.component('emailPassword', {
     templateUrl: 'templates/emailPassword.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
-        whichPage.set('Name, Email, and Password');
+        whichPage.set('Name, Email, and Password, 1/4');
         $scope.user = {
             firstName: '',
             lastName: '',
@@ -94,7 +94,7 @@ myApp.component('nameMajor', {
     templateUrl: 'templates/nameMajor.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
         
-        whichPage.set('Majors and Minors');
+        whichPage.set('Majors and Minors, 2/4');
         
         $scope.user = {};
         
@@ -193,7 +193,7 @@ myApp.component('nameMajor', {
 myApp.component('interestSelect', {
     templateUrl: 'templates/interestSelect.template.html',
     controller: function($scope, $http, $location, whichPage, profile) {
-        whichPage.set('Select Interests and Clubs');
+        whichPage.set('Select Interests and Clubs, 3/4');
         
         $scope.currentInterests = [];
         $scope.currentClubs = [];
@@ -288,7 +288,7 @@ myApp.component('interestSelect', {
 myApp.component('classSelect', {
     templateUrl: 'templates/classSelect.template.html',
     controller: function($scope, $http, $window, $location, whichPage, profile) {
-        whichPage.set('Previously taken Courses');
+        whichPage.set('Previously taken Courses, 4/4');
         
         $scope.allCourses = [];
         
