@@ -36,13 +36,13 @@ classFindApp.component('classFind', {
         $scope.allClasses = [];
         $scope.conversations = [];
         $scope.recommended = [];
+        $scope.coursesTaken = [];
         
         $http({
             method: 'GET',
             url: '/profile',
         }).then(
             function(response) {
-        $scope.coursesTaken = [];
                 profile.setProfile(response.data);
                 $scope.user = response.data;
                 $scope.user.chats.forEach(function(chat) {

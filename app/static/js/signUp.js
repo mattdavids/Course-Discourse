@@ -310,7 +310,7 @@ myApp.component('classSelect', {
             url: '/courses',
         }).then(
             function(response) {
-            $scope.allCourses = response.data;
+                $scope.allCourses = response.data;                
         },  function(response) {
             $location.path('/classes');
         });
@@ -329,9 +329,14 @@ myApp.component('classSelect', {
         $scope.updateSemesterCourses = function(season, year) {
             $scope.season = season;
             $scope.year = year;
-            $scope.semesterCourses = $scope.allCourses.filter(function(course) {
+            let temp = $scope.allCourses.filter(function(course) {
                 return course.season == season && course.year == year;
             });
+            for (let i = 0; i < temp.length - 1; i ++) {
+                if (temp[i + 1].courseName != temp[i].courseName) {
+                    $scope.semesterCourses.push(temp[i]);
+                }
+            }
             $scope.selectedClasses.forEach(function(course) {
                 $scope.removeClass(course);
             });            
@@ -373,7 +378,19 @@ myApp.component('classSelect', {
                         course.departmentName.toLowerCase().includes($scope.current.classSearch.toLowerCase()) ||
                         course.courseNumber.toLowerCase().includes($scope.current.classSearch.toLowerCase());
             }).sort(function(a, b) {
-                return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                if (a.departmentCode.toLowerCase() > b.departmentCode.toLowerCase()) {
+                    return 1;
+                } else if (a.departmentCode.toLowerCase() < b.departmentCode.toLowerCase()) {
+                    return -1;
+                }
+                if (a.courseNumber.toLowerCase() > b.courseNumber.toLowerCase()) {
+                    return 1;
+                } else if (a.courseNumber.toLowerCase() < b.courseNumber.toLowerCase()){
+                    return -1;
+                } else {
+                    return 0;
+                }
+                    
             })); 
         }
         

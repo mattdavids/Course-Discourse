@@ -4,13 +4,13 @@
         <div class="row">
             <div class="col-md-8">  
                 <hr>
-                <span class="h4">Recommended</span>
+                <span class="h4">Recommended Courses</span>
                 <div class="pre-scrollable" style="height: 140px;">
                     <table ng-if='displayedRecommended.length != 0' class="table">
                         <tbody>
                             <tr ng-repeat="row in displayedRecommended">
                                 <td ng-repeat="class in row">
-                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="createConversation(class)" value="Add {{class.courseName}}" />
+                                    <input type="button" class="btn btn-default btn-sm" id="{{class}}" ng-click="createConversation(class)" value="Add {{class.departmentCode}} {{class.courseNumber.slice(0, 3)}} - {{class.courseName}}" />
                                 </td>
                             </tr>
                         </tbody>
@@ -32,7 +32,7 @@
                             <tbody>
                                 <tr ng-repeat="row in displayedAll">
                                     <td ng-repeat="class in row">
-                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="createConversation(class)" value="{{class.courseName}}" />
+                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="createConversation(class)" value="{{class.departmentCode}} {{class.courseNumber.slice(0, 3)}} - {{class.courseName}}" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -47,7 +47,7 @@
                     <tbody>
                         <tr ng-repeat="convo in conversations">
                             <td>
-                                <input type="button" class="btn btn-default btn-sm" id="goto{{convo}}" ng-if="convo.courseName" ng-click="gotoMessage(convo)" value="Message {{convo.departmentCode}} {{convo.courseNumber}}" />
+                                <input type="button" class="btn btn-default btn-sm" id="goto{{convo}}" ng-if="convo.courseName" ng-click="gotoMessage(convo)" value="Message {{convo.departmentCode}} {{convo.courseNumber.slice(0, 3)}}" />
                                 <input type="button" class="btn btn-default btn-sm" id="goto{{convo}}" ng-if="!convo.courseName" ng-click="gotoMessage(convo)" value="Message {{convo.topic}}" />
                                 <input type="button" class="btn btn-danger btn-sm" id="{{convo}}Remove" ng-click="removeFromSelected(convo)" value="X" />
                                 <span style="color: red;" ng-if="convo.noMatch">No match found</span>

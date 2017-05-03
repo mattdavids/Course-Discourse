@@ -28,7 +28,7 @@
                             <tbody>
                                 <tr ng-repeat="row in classResult">
                                     <td ng-repeat="class in row">
-                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="addClassToSelected(class)" value="Add {{class.courseName}}" />
+                                        <input type="button" class="btn btn-default btn-sm" id="{{class}}Searched" ng-click="addClassToSelected(class)" value="Add {{class.departmentCode}} {{class.courseNumber.slice(0, 3)}} - {{class.courseName}}" />
                                     </td>
                                 </tr>
                             </tbody>
