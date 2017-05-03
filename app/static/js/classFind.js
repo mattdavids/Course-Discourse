@@ -42,7 +42,7 @@ classFindApp.component('classFind', {
             url: '/profile',
         }).then(
             function(response) {
-                
+        $scope.coursesTaken = [];
                 profile.setProfile(response.data);
                 $scope.user = response.data;
                 $scope.user.chats.forEach(function(chat) {
@@ -56,6 +56,16 @@ classFindApp.component('classFind', {
             $location.path('/');
         });
         
+        $http({
+            method: 'GET',
+            url: '/coursesTaken',
+        }).then(
+            function(response) {
+                $scope.coursesTaken = response.data;
+        },  function(response) {
+            $location.path('/');
+        });
+                
         $http({
             method: 'GET',
             url: '/recommended',
@@ -74,9 +84,7 @@ classFindApp.component('classFind', {
                         item.recommended = true;
                         return item;
                     });
-                    $scope.displayedRecommended = makeTableFriendly($scope.recommended.sort(function(a, b) {
-                        return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
-                    }));
+                    updateDisplayedRecommended()
                 }
         },  function(response) {
             $location.path('/');
@@ -101,6 +109,26 @@ classFindApp.component('classFind', {
             $location.path('/');
         });
         
+        function updateDisplayedRecommended() {
+            $scope.displayedRecommended = makeTableFriendly($scope.recommended.filter(function(course) {
+                 return !checkCourseTopicInArray(course.departmentCode + " " + course.courseNumber.slice(0, 3), $scope.conversations) && 
+                        !checkCourseInArray(course.departmentCode + " " + course.courseNumber.slice(0, 3), $scope.coursesTaken);
+            }).sort(function(a, b) {
+                if (a.departmentCode.toLowerCase() > b.departmentCode.toLowerCase()) {
+                    return 1;
+                } else if (a.departmentCode.toLowerCase() < b.departmentCode.toLowerCase()) {
+                    return -1;
+                }
+                if (a.courseNumber.toLowerCase() > b.courseNumber.toLowerCase()) {
+                    return 1;
+                } else if (a.courseNumber.toLowerCase() < b.courseNumber.toLowerCase()){
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }));
+        }
+        
         $scope.selectedClasses = [];
         $scope.searchTerm = '';
 
@@ -124,23 +152,54 @@ classFindApp.component('classFind', {
             $scope.displayedAll =
                 makeTableFriendly($scope.allClasses.filter(function(course) {
                     
-                return  course.courseName.toLowerCase().includes($scope.searchTerm.toLowerCase()) || 
+                return  ((course.courseName.toLowerCase().includes($scope.searchTerm.toLowerCase()) || 
                         course.departmentCode.toLowerCase().includes($scope.searchTerm.toLowerCase()) ||
                         course.departmentName.toLowerCase().includes($scope.searchTerm.toLowerCase()) ||
-                        course.courseNumber.toLowerCase().includes($scope.searchTerm.toLowerCase());
+                        course.courseNumber.toLowerCase().includes($scope.searchTerm.toLowerCase())) && !checkCourseTopicInArray(course.departmentCode + " " + course.courseNumber.slice(0, 3), $scope.conversations) && !checkCourseInArray(course.departmentCode + " " + course.courseNumber.slice(0, 3), $scope.coursesTaken));
             }).sort(function(a, b) {
-                return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
+                if (a.departmentCode.toLowerCase() > b.departmentCode.toLowerCase()) {
+                    return 1;
+                } else if (a.departmentCode.toLowerCase() < b.departmentCode.toLowerCase()) {
+                    return -1;
+                }
+                if (a.courseNumber.toLowerCase() > b.courseNumber.toLowerCase()) {
+                    return 1;
+                } else if (a.courseNumber.toLowerCase() < b.courseNumber.toLowerCase()){
+                    return -1;
+                } else {
+                    return 0;
+                }
             })); 
         }
 
+        function checkCourseTopicInArray(val, arr) {
+            let response = false;
+            arr.forEach(function(item) {
+                if (item.topic == val) {
+                    response = true;
+                }
+            });
+            return response;
+        }
+        
+        function checkCourseInArray(val, arr) {
+            let response = false;
+            arr.forEach(function(course) {
+                if (course.departmentCode + " " + course.courseNumber.slice(0, 3) == val) {
+                    response = true;
+                }
+            });
+            return response;
+        }
+        
         $scope.createConversation = function(classDiscussing) {
             removeFromArray($scope.allClasses, classDiscussing);
             removeFromArray($scope.recommended, classDiscussing);
-            $scope.displayedRecommended = makeTableFriendly($scope.recommended);
+            updateDisplayedRecommended()
             $scope.conversations.push(classDiscussing);
 
             $scope.updateClassSearch();
-        }
+        };
 
         $scope.removeFromSelected = function(classToRemove){
             removeFromArray($scope.conversations, classToRemove);
@@ -163,9 +222,7 @@ classFindApp.component('classFind', {
                 $scope.allClasses.push(classToRemove);
                 if(classToRemove.recommended) {
                     $scope.recommended.push(classToRemove);
-                    $scope.displayedRecommended = makeTableFriendly($scope.recommended.sort(function(a, b) {
-                        return a.courseName.toLowerCase().localeCompare(b.courseName.toLowerCase());
-                    }));
+                    updateDisplayedRecommended()
                 }
                 $scope.updateClassSearch();
             }
@@ -191,7 +248,7 @@ classFindApp.component('classFind', {
                         if (response.data.msg) {
                             convo.noMatch = true;
                         } else {
-                            keepTopic.setTopic(convo.departmentCode + ' ' + convo.courseNumber);
+                            keepTopic.setTopic(convo.departmentCode + ' ' + convo.courseNumber.slice(0, 3));
                             keepTopic.setId(response.data._id);
                             $location.path('/' + response.data._id);
                         }

@@ -164,9 +164,25 @@ app.get('/courses/currentYear', function(req, res) {
 })
 
 app.get('/courses', function(req, res) {
+    
     Course.find({}, function(err, courses) {
         respondWithCourses(res, err, courses);
     });
+});
+
+app.get('/coursesTaken', function(req, res) {
+    if (!req.user) {
+        res.end('{err : "You must be logged in"}');
+    }
+    
+    let user = req.user;
+    let ids = user.coursesTaken.map(function(item) {
+        return item.course;
+    });
+    Course.find({_id : {$in : ids}}, function(err, courses) {
+        respondWithCourses(res, err, courses);
+    });
+    
 })
 
 app.get('/recommended', function(req, res) {
@@ -224,7 +240,7 @@ app.get('/match/:courseId', function(req, res) {
                 let match = users[0];
                 let chat = new Chat();
                 chat.members = [req.user._id, match._id];
-                chat.topic = course.departmentCode + " " + course.courseNumber;
+                chat.topic = course.departmentCode + " " + course.courseNumber.slice(0, 3);
 
                 match.chats.push(chat);
                 req.user.chats.push(chat);
