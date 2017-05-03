@@ -196,11 +196,32 @@ app.get('/recommended', function(req, res) {
         return;
     }
     
-    let majorToMatch = ".*" + user.majors[0].replace(' major', '') + ".*";
-
-    Course.find({$and : [{ year: '2017'}, {season: 'fall'}, {departmentName : {$regex : majorToMatch}}]}, function(err, courses) {
-        respondWithCourses(res, err, courses);
+    let query = user.majors.map(function(major) {
+        
+        return {
+            departmentName : {
+                $regex : ".*" + major.replace(' major', '') + ".*",
+            }
+        }
     });
+    
+    user.minors.map(function(minor) {
+        query.push({
+            departmentName: {
+                $regex : ".*" + minor.replace(' minor', '') + '.*',
+            }
+        });
+    });
+
+    Course.find({
+        $and : 
+            [{ year: '2017'},
+            {season: 'fall'},
+            {$or : query}
+        ]}, function(err, courses) {
+            respondWithCourses(res, err, courses);
+        });
+
 });
 
 app.get('/match/:courseId', function(req, res) {
