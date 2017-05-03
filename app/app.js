@@ -301,6 +301,7 @@ app.post('/remove', function(req, res) {
     
     Chat.findByIdAndRemove(req.body.id, function(){}).remove();
     req.statusCode = 302;
+    return res.end(JSON.stringify({successful: true}));
 
 });
 
