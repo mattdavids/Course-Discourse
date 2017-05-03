@@ -195,9 +195,11 @@ classFindApp.component('classFind', {
         
         $scope.createConversation = function(classDiscussing) {
             removeFromArray($scope.allClasses, classDiscussing);
-            removeFromArray($scope.recommended, classDiscussing);
+            let recommendedclassDiscussing = classDiscussing;
+            recommendedclassDiscussing.recommended = true;
+            removeFromArray($scope.recommended, recommendedclassDiscussing);
             $scope.conversations.push(classDiscussing);
-            updateDisplayedRecommended()
+            updateDisplayedRecommended();
             $scope.updateClassSearch();
             
             $http({
@@ -238,7 +240,8 @@ classFindApp.component('classFind', {
                     data: classToRemove,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 });
-            } else if (classToRemove.courseName) {
+            }
+            if (classToRemove.courseName) {
                 classToRemove.noMatch = false;
                 $scope.allClasses.push(classToRemove);
                 if(classToRemove.recommended) {
@@ -250,7 +253,12 @@ classFindApp.component('classFind', {
         }
 
         function removeFromArray(arr, item) {
-            let indexOfItem = arr.indexOf(item);
+            let indexOfItem = -1;
+            for (let i = 0; i < arr.length; i ++) {
+                if (item._id == arr[i]._id) {
+                    indexOfItem = i;
+                }
+            }
             if(indexOfItem != -1) {
                 arr.splice(indexOfItem, 1);
             }
