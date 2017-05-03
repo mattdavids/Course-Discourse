@@ -53,6 +53,11 @@
                                 <span style="color: red;" ng-if="convo.noMatch">No match found</span>
                             </td>
                         </tr>
+                        <tr ng-if="conversations.length == 0">
+                            <td>
+                                <p>Select a course from the list to match with someone who has taken that course and get their take!</p>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
