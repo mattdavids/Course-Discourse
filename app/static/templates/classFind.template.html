@@ -51,6 +51,7 @@
                                 <input type="button" class="btn btn-default btn-sm" id="goto{{convo}}" ng-if="!convo.courseName" ng-click="gotoMessage(convo)" value="Message {{convo.topic}}" />
                                 <input type="button" class="btn btn-danger btn-sm" id="{{convo}}Remove" ng-click="removeFromSelected(convo)" value="X" />
                                 <span style="color: red;" ng-if="convo.noMatch">No match found</span>
+                                <span style="color: green;" ng-if="convo.yesMatch && convo.courseName">Match found!</span>
                             </td>
                         </tr>
                         <tr ng-if="conversations.length == 0">

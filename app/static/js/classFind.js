@@ -49,6 +49,7 @@ classFindApp.component('classFind', {
                     $scope.conversations.push({
                         id: chat._id,
                         topic: chat.topic,
+                        yesMatch: true,
                     });
                     
                 });
@@ -195,15 +196,35 @@ classFindApp.component('classFind', {
         $scope.createConversation = function(classDiscussing) {
             removeFromArray($scope.allClasses, classDiscussing);
             removeFromArray($scope.recommended, classDiscussing);
-            updateDisplayedRecommended()
             $scope.conversations.push(classDiscussing);
-
+            updateDisplayedRecommended()
             $scope.updateClassSearch();
+            
+            $http({
+                method: 'GET',
+                url: '/match/' + classDiscussing._id,
+            }).then(
+                function(response) {
+                    if (response.data.msg) {
+                        classDiscussing.noMatch = true;
+                        classDiscussing.yesMatch = false;
+                    } else {
+                        classDiscussing.yesMatch = true;
+                        keepTopic.setTopic(classDiscussing.departmentCode + ' ' + classDiscussing.courseNumber.slice(0, 3));
+                        keepTopic.setId(response.data._id);
+                        classDiscussing.id = (response.data._id);
+                    }
+
+                },  function(response) {
+                        $location.path('/');
+                        classDiscussing.noMatch = true;
+                        classDiscussing.yesMatch = false;
+            }); 
         };
 
         $scope.removeFromSelected = function(classToRemove){
             removeFromArray($scope.conversations, classToRemove);
-            if(!classToRemove.courseName) {
+            if(classToRemove.yesMatch) {
                 $http({
                     method: 'POST',
                     url: '/remove',
@@ -217,15 +238,15 @@ classFindApp.component('classFind', {
                     data: classToRemove,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 });
-            } else {
+            } else if (classToRemove.courseName) {
                 classToRemove.noMatch = false;
                 $scope.allClasses.push(classToRemove);
                 if(classToRemove.recommended) {
                     $scope.recommended.push(classToRemove);
-                    updateDisplayedRecommended()
                 }
-                $scope.updateClassSearch();
             }
+            updateDisplayedRecommended()
+            $scope.updateClassSearch();
         }
 
         function removeFromArray(arr, item) {
@@ -240,23 +261,8 @@ classFindApp.component('classFind', {
                 $location.path('/' + convo.id); 
             }
             else {
-                $http({
-                    method: 'GET',
-                    url: '/match/' + convo._id,
-                }).then(
-                    function(response) {
-                        if (response.data.msg) {
-                            convo.noMatch = true;
-                        } else {
-                            keepTopic.setTopic(convo.departmentCode + ' ' + convo.courseNumber.slice(0, 3));
-                            keepTopic.setId(response.data._id);
-                            $location.path('/' + response.data._id);
-                        }
-
-                },  function(response) {
-                        $location.path('/');
-                        convo.noMatch = true;
-            }); 
+                convo.noMatch = true;
+                convo.yesMatch = false;
             }
         }
     }
