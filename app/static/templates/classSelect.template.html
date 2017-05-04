@@ -43,7 +43,7 @@
                     <tbody>
                         <tr ng-repeat="class in chosenCourses">
                             <td ng-if="class.course.season == season && class.course.year == year">
-                                {{class.course.courseName}}  <input type="button" class="btn btn-sm btn-danger" id="{{class}}Current" ng-click="removeFromCurrentClasses(class.course)" value="Remove" />
+                                {{class.course.departmentCode}} {{class.course.courseNumber.slice(0, 3)}} - {{class.course.courseName}}  <input type="button" class="btn btn-sm btn-danger" id="{{class}}Current" ng-click="removeFromCurrentClasses(class.course)" value="Remove" />
                             </td>
                         </tr>
                     </tbody>
