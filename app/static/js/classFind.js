@@ -12,7 +12,7 @@ classFindApp.config(function($routeProvider) {
 
 classFindApp.component('headerTop', {
     templateUrl: 'templates/headerTop.template.html',
-    controller: function($scope, $http, $location, $window) {
+    controller: function($scope, $http, $location, $window, profile) {
         $scope.logout = true;
         
         $scope.logoutFunc = function() {
@@ -279,7 +279,7 @@ classFindApp.component('classFind', {
 
 classFindApp.component('conversation', {
     templateUrl: 'templates/conversation.template.html',
-    controller: function($scope, $http, $routeParams, $location, $rootScope, conversationsService, profile, socket, keepTopic) {
+    controller: function($scope, $http, $routeParams, $location, $rootScope, profile, socket, keepTopic) {
         $scope.location = $location;
         
         $scope.conversations = [];
@@ -368,53 +368,6 @@ classFindApp.component('conversation', {
         
     }
 });
-
-classFindApp.service('conversationsService', function() {
-    let conversations = [{
-        otherUser: 1, 
-        messages: [{
-                        sent: true, 
-                        text: 'Hi!'
-                    }, {
-                        sent: false, 
-                        text: 'Hello'
-                    }, {
-                        sent: true, 
-                        text: 'Did you like the prof for Comp 124?'
-                    }, {
-                        sent: false, 
-                        text: 'Yeah! They were awesome!'
-                    }]
-    } , {
-        otherUser: 2, 
-        messages: [{
-            sent: true, 
-            text: 'Hello?'
-        }, {
-            sent: true, 
-            text: 'Are you there??'
-        }, {
-            sent: false,
-            text: 'Sorry, I was at Cafe Mac! What questions do you have?'
-        }]
-    }, {
-        otherUser: 3, 
-        messages: [{
-            sent: true,
-            text: 'Bryro?!'
-        }]
-    }];
-
-    return {
-        all: function() { return conversations }, 
-        get: function (otherUserId) {
-            return conversations.find(function(convo) {
-                return convo.otherUser == otherUserId;    
-            });
-        }
-    };
-});
-
 
 classFindApp.factory('socket', function($rootScope) {
     let socket = io.connect('localhost:3000');
