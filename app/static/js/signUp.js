@@ -327,20 +327,23 @@ myApp.component('classSelect', {
         $scope.currentClasses = [];
         
         $scope.updateSemesterCourses = function(season, year) {
-            $scope.season = season;
-            $scope.year = year;
-            let temp = $scope.allCourses.filter(function(course) {
-                return course.season == season && course.year == year;
-            });
-            for (let i = 0; i < temp.length - 1; i ++) {
-                if (temp[i + 1].courseName != temp[i].courseName) {
-                    $scope.semesterCourses.push(temp[i]);
+            if ($scope.season != season || $scope.year != year){
+                $scope.season = season;
+                $scope.year = year;
+                let temp = $scope.allCourses.filter(function(course) {
+                    return course.season == season && course.year == year;
+                });
+                $scope.semesterCourses = [];
+                for (let i = 0; i < temp.length - 1; i ++) {
+                    if (temp[i + 1].courseName != temp[i].courseName) {
+                        $scope.semesterCourses.push(temp[i]);
+                    }
                 }
+                $scope.selectedClasses.forEach(function(course) {
+                    $scope.removeClass(course);
+                });            
+                $scope.updateClassSearch();
             }
-            $scope.selectedClasses.forEach(function(course) {
-                $scope.removeClass(course);
-            });            
-            $scope.updateClassSearch();
         }
         
         $scope.addClassToSelected = function(item) {
@@ -397,11 +400,14 @@ myApp.component('classSelect', {
         $scope.addClassFinal = function(course) {
             if (course.reason) {
                 course.noReason = false;
-                $scope.chosenCourses.push({
-                course: course,
-                reason: course.reason,
-            });
-            $scope.selectedClasses.splice($scope.selectedClasses.indexOf(course), 1);
+                if ($scope.chosenCourses.indexOf(course) == -1) {
+                    $scope.chosenCourses.push(
+                        {
+                            course: course,
+                            reason: course.reason,
+                        });
+                     $scope.selectedClasses.splice($scope.selectedClasses.indexOf(course), 1);
+                }
             } else {
                 course.noReason = true;
             }
