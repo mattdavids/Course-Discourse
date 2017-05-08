@@ -245,7 +245,14 @@ app.get('/match/:courseId', function(req, res) {
             }
 
             let courseIds = courses.map((course) => course._id);
-            User.find({$and: [{_id : {$ne : req.user._id}}, {coursesTaken: {$elemMatch: {course: {$in : courseIds}}}}]}, function(err, users) {
+            User.find({$and: 
+                       [
+                           {_id : 
+                            {$ne : req.user._id}
+                           }, {coursesTaken: 
+                               {$elemMatch: 
+                                {course: 
+                                 {$in : courseIds}}}}]}, function(err, users) {
                 if (err) {
                     return res.end('{err: "database error", msg : "' + err + '"}');
                 }
@@ -258,22 +265,98 @@ app.get('/match/:courseId', function(req, res) {
                     return res.end('{msg: "no other users found"}');
                 }
 
-                let match = users[0];
-                let chat = new Chat();
-                chat.members = [req.user._id, match._id];
-                chat.topic = course.departmentCode + " " + course.courseNumber.slice(0, 3);
+                let matchListRating = users.map(function(user) {
+                    return {
+                        _id : user._id,
+                        rating : getDistanceBetweenUsers(req.user, user),
+                    }
+                }).sort(function(a, b) {
+                    return a.rating - b.rating;
+                });
+                
+                User.findById(matchListRating[0]._id, function(err, match) {
+                    if (err) {
+                        return res.end('{err: "database error", msg : "' + err + '"}');
+                    }
+                    
+                    let chat = new Chat();
+                    chat.members = [req.user._id, match._id];
+                    chat.topic = course.departmentCode + " " + course.courseNumber.slice(0, 3);
 
-                match.chats.push(chat);
-                req.user.chats.push(chat);
+                    match.chats.push(chat);
+                    req.user.chats.push(chat);
 
-                req.user.save();
-                match.save();
-                chat.save();
-                res.end(JSON.stringify(chat));
-             })
+                    req.user.save();
+                    match.save();
+                    chat.save();
+                    res.end(JSON.stringify(chat));
+                    });
+             });
         });
     })
 });
+
+function getDistanceBetweenUsers(user1, user2) {
+    let result = 0;
+    result += symmetricDifference(user1.interests, user2.interests).length;
+    result += symmetricDifference(user1.clubs, user2.clubs).length;
+    result += 10 * symmetricDifference(user1.majors, user2.majors).length;
+    result += 5 * symmetricDifference(user1.minors, user2.minors).length;
+    result += compareCourseLists(user1.coursesTaken, user2.coursesTaken);
+    return result;
+}
+
+/*
+http://stackoverflow.com/questions/1187518/javascript-array-difference
+*/
+
+function symmetricDifference(arr1, arr2) {
+    let arr1Set = new Set(arr1);
+    let arr2Set = new Set(arr2);
+    
+    return arr1.filter(function(x) {
+        return !arr2Set.has(x);
+    }).concat(arr2.filter(function(x) {
+        return !arr1Set.has(x);
+    }));
+}
+
+function compareCourseLists(courses1, courses2) {
+    let result = 0;
+    let sameCourses = [];
+    
+    let course1Map = courses1.map(function(course) {
+        return course.course.courseName;
+    });
+    let course2Map = courses2.map(function(course) {
+        return course.course.courseName;
+    });
+    
+    for(let i = 0; i < course1Map.length; i ++) {
+        let index = course2Map.indexOf(course1Map[i]);
+        if (index > -1) {
+            sameCourses.push(course1Map[i]);
+            if (courses1[i].reason != courses2[index].reason) {
+                result += 2;
+            }
+        } else {
+            result += 4;
+        }
+    }
+    
+    for(let i = 0; i < course2Map.length; i ++) {
+        let index = course1Map.indexOf(course2Map[i]);
+        if (index > -1 && sameCourses.indexOf(course2Mapp[i]) < 0) {
+            if (courses1[i].reason != courses2[index].reason) {
+                result += 2;
+            }
+        } else {
+            result += 4;
+        }
+    }
+    return result;
+    
+}
 
 function respondWithCourses(res, err, courses) {
     if (err) {
