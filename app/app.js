@@ -7,7 +7,6 @@
 
 const dbURL = process.env.MONGOLAB_URI;
 const assert = require('assert');
-console.log(dbURL)
 
 /* Setup express */ 
 const express = require('express');
@@ -431,8 +430,10 @@ app.get('/checkUser/:email', function(req, res) {
 
 app.use(express.static(__dirname + '/static'));   
 
-server.listen(3000, function() {
-   console.log('listening on *:3000'); 
+let port = process.env.PORT || 8080;
+
+server.listen(port, function() {
+   console.log('listening on *:' + port); 
 });
 
 process.on('SIGINT', function() {
