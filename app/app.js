@@ -7,6 +7,7 @@
 
 const dbURL = process.env.MONGOLAB_URI;
 const assert = require('assert');
+console.log(dbURL)
 
 /* Setup express */ 
 const express = require('express');
