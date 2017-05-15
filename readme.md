@@ -1,5 +1,7 @@
 # Course Discourse
-This is a website designed to connect students investigating their next semester's course load with peers who have already taken these courses. 
+This is a website designed to connect students investigating their next semester's course load with peers who have already taken these courses.   
+
+The site can currently be found running on Heroku [here](https://course-discourse.herokuapp.com/).
 
 ## Installation
 Two additional components are required to host this website: Node.JS and MongoDB. 
