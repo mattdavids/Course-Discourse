@@ -5,7 +5,8 @@
  * https://code.tutsplus.com/tutorials/authenticating-nodejs-applications-with-passport--cms-21619 ~ General Authenticating with passport
  */
 
-const dbURL = process.env.MONGOLAB_URI;
+const dbURL = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/course-discourse';
+const secretKey = process.env.COURSE_DISCOURSE_KEY || 'mySecretKey';
 const assert = require('assert');
 
 /* Setup express */ 
@@ -33,7 +34,7 @@ mongoStore.on('error', function(error) {
 });
 
 app.use(expressSession({
-    secret: process.env.COURSE_DISCOURSE_KEY,
+    secret: secretKey,
     store: mongoStore,
     cooke: {
         maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -59,7 +60,7 @@ const io = require('socket.io')(server);
 const passportSocketIo = require('passport.socketio');
 io.use(passportSocketIo.authorize({
   key: 'connect.sid',
-  secret: process.env.COURSE_DISCOURSE_KEY,
+  secret: secretKey,
   store: mongoStore,
   passport: passport,
   cookieParser: cookieParser,
@@ -426,7 +427,6 @@ app.get('/checkUser/:email', function(req, res) {
 
     });
 });
-
 
 app.use(express.static(__dirname + '/static'));   
 
